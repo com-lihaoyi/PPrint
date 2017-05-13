@@ -78,3 +78,13 @@ lazy val tprint = crossProject.crossType(CrossType.Pure)
 
 lazy val tprintJVM = tprint.jvm
 lazy val tprintJS = tprint.js
+
+lazy val tprintReadme = scalatex.ScalatexReadme(
+  projectId = "tprintReadme",
+  wd = file(""),
+  url = "https://github.com/lihaoyi/tprint/tree/master",
+  source = "Readme"
+).settings(
+  scalaVersion := "2.11.11",
+  (unmanagedSources in Compile) += baseDirectory.value / ".." / "project" / "Constants.scala"
+)
