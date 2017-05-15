@@ -3,6 +3,8 @@ val baseSettings = Seq(
   name := "tprint",
   version := "0.4.6",
   scalaVersion := "2.11.11",
+  testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
+  publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"),
   crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2", "2.13.0-M1"),
   scmInfo := Some(ScmInfo(
     browseUrl = url("https://github.com/lihaoyi/TPrint"),
@@ -20,9 +22,26 @@ val baseSettings = Seq(
 
 baseSettings
 
-lazy val tprint = crossProject.crossType(CrossType.Pure)
-  .settings(baseSettings)
+/**
+ *
+ */
+lazy val pprint = crossProject.crossType(CrossType.Pure)
   .settings(
+    baseSettings,
+    name := "ammonite-pprint",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "sourcecode" % "0.1.3",
+      "com.lihaoyi" %%% "fansi" % "0.2.3",
+      "com.lihaoyi" %%% "utest" % "0.4.7" % Test
+    )
+  )
+
+lazy val pprintJVM = pprint.jvm
+lazy val pprintJS = pprint.js
+
+lazy val tprint = crossProject.crossType(CrossType.Pure)
+  .settings(
+    baseSettings,
     scalacOptions ++= Seq(scalaBinaryVersion.value match {
       case x if x.startsWith("2.12") => "-target:jvm-1.8"
       case _ => "-target:jvm-1.7"
@@ -34,8 +53,7 @@ lazy val tprint = crossProject.crossType(CrossType.Pure)
       "com.lihaoyi" %%% "utest" % "0.4.7" % Test,
       "com.chuusai" %%% "shapeless" % "2.3.2" % Test
     ),
-    testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
-    publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"),
+
     unmanagedSourceDirectories in Compile ++= {
       if (Set("2.11", "2.12", "2.13.0-M1").contains(scalaBinaryVersion.value))
         Seq(baseDirectory.value / ".." / "src" / "main" / "scala-2.10+")
