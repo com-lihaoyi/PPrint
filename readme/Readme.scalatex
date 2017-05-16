@@ -35,6 +35,12 @@
     @li
       Pretty-printing is configurable, so you can configure maximum widths for wrapping, maximum heights for truncation, and other such things.
 
+  @p
+    If you've enjoyed using PPrint or any of my other libraries, please
+    consider @lnk("chipping in", "https://www.patreon.com/lihaoyi" to support
+    their ongoing development on @lnk("Patron", "https://www.patreon.com/lihaoyi")!
+    Any amount helps ensure we can continue improving these libraries going forward.
+
   @sect{Getting Started}
     @p
       Add the following to your SBT config:
@@ -164,7 +170,16 @@
       res0: Iterator[String] = non-empty iterator
 
     @p
-      This gives you an iterator with which you can do whatever you want: stream it to a file, to your logging system, etc.. Even for extremely large data structures, you can use this data structure to page through it and see what it contains without ever materializing the entire string in memory.
+      This gives you an iterator with which you can do whatever you want:
+      stream it to a file, to your logging system, etc.. Even for extremely
+      large data structures, you can use this data structure to page through
+      it and see what it contains without ever materializing the entire
+      string in memory.
+
+    @p
+      PPrint needs to buffer output in some cases in order to correctly
+      wrap/multiline/truncate output. However, in all cases it should need
+      to buffer at most one line
 
   @sect{Customization}
 
@@ -218,6 +233,34 @@
           Ground-up rewrite to use manual pretty-printer registration instead
           of implicit derivation. @hl.scala{pprint.log} and @hl.scala{pprint.tokenize}
           still exist, but most of the internals have been totally rewritten.
+
+        @li
+          @sect.ref{Customization} of things like the default width/height of
+          the output, colors, or adding special support for additional classes,
+          is now done in instantiating new @code{PPrinter} objects rather than
+          by passing around implicits. This should be much more intuitive and
+          harder to get wrong
+
+        @li
+          Line-wrapping should be much more strict about following the desired
+          width and height. There are likely still bugs in it, but it should be
+          better than before.
+
+        @li
+          Line-wrapping in general should be more predictable, especially in the
+          presence of infix operators like `->` or `::`
+
+        @li
+          Performance should be far better than in previous versions; my ad-hoc
+          benchmarks show a ~200-220x (~20,000-22,000%) speedup over the previous
+          version. With all the lazy/iterator/formatting overhead, it's still ~50x
+          slower than @code{.toString}, but that sure beats being 10,000x slower!
+
+        @li
+          If you've enjoyed using PPrint or any of my other libraries, please
+          consider @lnk("chipping in", "https://www.patreon.com/lihaoyi" to support
+          their ongoing development on @lnk("Patron", "https://www.patreon.com/lihaoyi")!
+          Any amount helps ensure we can continue improving these libraries going forward.
 
 
     @sect{0.4.3}
