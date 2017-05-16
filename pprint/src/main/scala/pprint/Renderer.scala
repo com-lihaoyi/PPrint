@@ -6,7 +6,7 @@ class Renderer(maxWidth: Int,
                colorApplyPrefix: fansi.Attrs,
                colorLiteral: fansi.Attrs,
                indentStr: String){
-  val x = PPrint
+  val x = PPrinter
   def joinIter[T](it: Iterator[Iterator[T]], joiner: T) = new Iterator[Iterator[T]]{
     var count = 0
     def hasNext = it.hasNext

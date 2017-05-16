@@ -30,7 +30,8 @@ lazy val pprint = crossProject.crossType(CrossType.Pure)
     baseSettings,
     name := "pprint",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "fansi" % "0.2.3",
+      "com.lihaoyi" %%% "sourcecode" % "0.1.3",
+      "com.lihaoyi" %%% "fansi" % "0.2.4",
       "com.lihaoyi" %%% "utest" % "0.4.7" % Test
     )
   )
@@ -46,7 +47,7 @@ lazy val tprint = crossProject.crossType(CrossType.Pure)
       case _ => "-target:jvm-1.7"
     }),
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "fansi" % "0.2.3",
+      "com.lihaoyi" %%% "fansi" % "0.2.4",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
       "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
       "com.lihaoyi" %%% "utest" % "0.4.7" % Test,

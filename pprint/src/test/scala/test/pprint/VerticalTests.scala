@@ -1,6 +1,6 @@
 package test.pprint
 
-import pprint.PPrint
+import pprint.PPrinter
 import utest._
 
 import scala.annotation.tailrec
@@ -305,6 +305,7 @@ object VerticalTests extends TestSuite{
         val str = haystack.map(_.render).mkString
         for ((needle, expected) <- needles){
           val count = countSubstring(str, needle)
+
           assert(count == expected)
         }
       }
@@ -318,11 +319,12 @@ object VerticalTests extends TestSuite{
 
       import Console._
       val cReset = fansi.Color.Reset.escape
-      * - count(PPrint.Color.tokenize(123), GREEN -> 1, cReset -> 1)
-      * - count(PPrint.Color.tokenize(""), GREEN -> 1, cReset -> 1)
-      * - count(PPrint.Color.tokenize(Seq(1, 2, 3)), GREEN -> 3, YELLOW -> 1, cReset -> 4)
+
+      * - count(PPrinter.Color.tokenize(123), GREEN -> 1, cReset -> 1)
+      * - count(PPrinter.Color.tokenize(""), GREEN -> 1, cReset -> 1)
+      * - count(PPrinter.Color.tokenize(Seq(1, 2, 3)), GREEN -> 3, YELLOW -> 1, cReset -> 4)
       * - count(
-        PPrint.Color.tokenize(Map(1 -> Nil, 2 -> Seq(" "), 3 -> Seq("   "))),
+        PPrinter.Color.tokenize(Map(1 -> Nil, 2 -> Seq(" "), 3 -> Seq("   "))),
         GREEN -> 5, YELLOW -> 4, cReset -> 9
       )
     }
