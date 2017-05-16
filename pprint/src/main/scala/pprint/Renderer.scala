@@ -1,4 +1,4 @@
-package ammonite.pprint
+package pprint
 
 import scala.annotation.switch
 

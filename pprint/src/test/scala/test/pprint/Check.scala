@@ -1,60 +1,53 @@
 package test.pprint
-import ammonite.pprint.PPrint
+import pprint.PPrint
 import utest._
 class Check(width: Int = 100, height: Int = 9999){
+  def truncate(input: Iterator[fansi.Str]): Iterator[fansi.Str] = {
+
+  }
   def apply(t: Any, expected: String*) = {
 
-    println("pprinting...")
-    val pprinted0 = PPrint.BlackWhite
-    println("pprinted0")
-    val pprinted1 = pprinted0.tokenize(t, width)
-
-    println("pprinted1 " + pprinted1)
-
-    val pprinted = pprinted1.flatMap(_.plainText.toCharArray)
+    val pprinted = PPrint.BlackWhite.tokenize(t, width)
     val output = new StringBuilder()
     val lineLengths = collection.mutable.Buffer(0)
+    var previousSlashN = false
+    var previousSlashR = false
     def handleNormalChar(char: Char) = {
+      previousSlashN = false
+      previousSlashR = false
       output.append(char)
-      if (char == '\n' || char == '\r'){
+      if (char == '\n' && previousSlashR || char == '\r' && previousSlashN){
+        // do nothing
+      }else if (char == '\n'){
+        previousSlashN = true
         lineLengths.append(0)
-      }else if (lineLengths.last == width){
+      } else if(char == '\r') {
+        previousSlashR = true
         lineLengths.append(0)
-      }else{
-        lineLengths(lineLengths.length-1) += 1
       }
+      else if (lineLengths.last == width) lineLengths.append(0)
+      else lineLengths(lineLengths.length-1) += 1
     }
+
     def completedLines = lineLengths.length-1
+
+    var finishedChunk = false
     while(pprinted.hasNext && completedLines < height){
-      val char = pprinted.next()
-
-      char match {
-        case '\n' if pprinted.hasNext =>
-          pprinted.next() match{
-            case '\r' =>
-              lineLengths.append(0)
-
-              output.append("\n\r")
-            case c2 =>
-              handleNormalChar(char)
-              if (completedLines < height) handleNormalChar(c2)
-          }
-        case '\r' if pprinted.hasNext =>
-          pprinted.next() match{
-            case '\n' =>
-              lineLengths.append(0)
-              output.append("\r\n")
-            case c2 =>
-              handleNormalChar(char)
-              if (completedLines < height) handleNormalChar(c2)
-          }
-        case _ => handleNormalChar(char)
+      val chunk = pprinted.next()
+      val chars = chunk.getChars
+      var i = 0
+      finishedChunk = false
+      while(i < chars.length && completedLines < height){
+        val char = chars(i)
+        handleNormalChar(char)
+        i += 1
       }
+      if (i == chars.length) finishedChunk = true
     }
 
 
     val string =
-      if (!pprinted.hasNext) output.mkString
+      if (!pprinted.hasNext && finishedChunk) output.mkString
       else {
         assert(completedLines == height)
         // -2 because it's not the last, empty line, but the one

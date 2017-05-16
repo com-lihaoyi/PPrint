@@ -1,11 +1,11 @@
 val baseSettings = Seq(
   organization := "com.lihaoyi",
   name := "tprint",
-  version := "0.4.6",
+  version := "0.5.0-SNAPSHOT",
   scalaVersion := "2.11.11",
   testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
   publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"),
-  crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2", "2.13.0-M1"),
+  crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2"),
   scmInfo := Some(ScmInfo(
     browseUrl = url("https://github.com/lihaoyi/TPrint"),
     connection = "scm:git:git@github.com:lihaoyi/TPrint.git"
@@ -28,9 +28,8 @@ baseSettings
 lazy val pprint = crossProject.crossType(CrossType.Pure)
   .settings(
     baseSettings,
-    name := "ammonite-pprint",
+    name := "pprint",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "sourcecode" % "0.1.3",
       "com.lihaoyi" %%% "fansi" % "0.2.3",
       "com.lihaoyi" %%% "utest" % "0.4.7" % Test
     )

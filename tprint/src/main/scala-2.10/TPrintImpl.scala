@@ -1,5 +1,4 @@
 package pprint
-import pprint.Config
 
 import scala.reflect.runtime.universe._
 

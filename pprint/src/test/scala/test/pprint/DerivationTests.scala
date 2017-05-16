@@ -123,11 +123,11 @@ object DerivationTests extends TestSuite{
 
     }
     'enums{
-      val days1 = ammonite.pprint.PPrint.BlackWhite.tokenize(
+      val days1 = pprint.PPrint.BlackWhite.tokenize(
         java.util.concurrent.TimeUnit.DAYS
       ).mkString
 
-      val days2 = ammonite.pprint.PPrint.BlackWhite.tokenize(
+      val days2 = pprint.PPrint.BlackWhite.tokenize(
         scala.concurrent.duration.SECONDS: java.util.concurrent.TimeUnit
       ).mkString
 

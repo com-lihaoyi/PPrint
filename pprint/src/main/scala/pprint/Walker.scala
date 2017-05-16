@@ -1,4 +1,4 @@
-package ammonite.pprint
+package pprint
 
 
 /**

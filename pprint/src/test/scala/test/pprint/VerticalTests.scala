@@ -1,6 +1,6 @@
 package test.pprint
 
-import ammonite.pprint.PPrint
+import pprint.PPrint
 import utest._
 
 import scala.annotation.tailrec

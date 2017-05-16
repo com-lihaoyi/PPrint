@@ -1,4 +1,4 @@
-package ammonite.pprint
+package pprint
 
 /**
   * Created by lihaoyi on 15/5/17.
