@@ -1,6 +1,6 @@
 @import Main._
 @a(
-  href := "https://github.com/lihaoyi/upickle-pprint",
+  href := "https://github.com/lihaoyi/pprint",
   img(
     position.absolute,
     top := 0,
