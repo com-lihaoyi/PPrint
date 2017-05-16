@@ -16,7 +16,6 @@ object VerticalTests extends TestSuite{
       def println(x: Any) = {
         Predef.println(System.nanoTime() + "\t" + x)
       }
-      println("increment!")
       "C"
     }
   }

@@ -34,11 +34,9 @@ class Renderer(maxWidth: Int,
     Predef.println(System.nanoTime() + "\t" + x)
   }
   def rec(x: Tree, leftOffset: Int, indent: Int): Result = {
-    println("rec " + x)
 
     x match{
       case Tree.Apply(prefix, body) =>
-        println("Tree.apply(" + prefix + ")")
         // Render children and buffer them until you fill up a single line,
         // or you run out of children.
         //
@@ -87,7 +85,6 @@ class Renderer(maxWidth: Int,
           val middle = joinIter(buffer.iterator.map(_.iterator), fansi.Str(" ")).flatten
           val iter = Result.concat(() => start, () => middle, () => Iterator(fansi.Str(")")))
           val length: Int = buffer.iterator.map(_.iterator.map(_.length).sum).sum
-          println("Tree.apply(" + prefix + ") End")
           new Result(iter, false, length)
         } else {
           def first = joinIter(
@@ -131,9 +128,7 @@ class Renderer(maxWidth: Int,
           )
         }
 
-      case t: Tree.Lazy =>
-        println("render lazy")
-        Result.fromString(t.body)
+      case t: Tree.Lazy =>    Result.fromString(t.body)
       case t: Tree.Literal => Result.fromString(colorLiteral(t.body))
 
     }
