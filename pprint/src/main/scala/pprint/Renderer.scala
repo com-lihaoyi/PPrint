@@ -88,28 +88,23 @@ class Renderer(maxWidth: Int,
           ).flatten
 
 
-          def remaining = dropRight(
+          def remaining0 = dropRight(
             body.flatMap(c =>
-              Iterator(fansi.Str("\n"), fansi.Str(indentStr * (indentCount+1))) ++
-                rec(c, (indentCount + 1) * indentStr.length, indentCount + 1).iter ++
-                Iterator(fansi.Str(","))
+              Iterator(fansi.Str("\n" + (indentStr * (indentCount+1)))) ++
+              rec(c, (indentCount + 1) * indentStr.length, indentCount + 1).iter ++
+              Iterator(fansi.Str(","))
             )
           )
-
-
-
-          def middle = Result.concat[fansi.Str](
-            () => first,
-            () => lastChildIter,
-            () => sep,
-            () => remaining
-          )
-
 
           def iter = Result.concat[fansi.Str](
             () => start,
             () => Iterator(fansi.Str("\n"), indentStr * (indentCount + 1)),
-            () => middle,
+            () => first,
+            () => lastChildIter,
+            () => sep,
+            // If there are no rendered items in the buffer, we do not need
+            // to add the leading newline, since the end-of-
+            () => if (buffer.isEmpty) remaining0.drop(1) else remaining0,
             () => Iterator(fansi.Str("\n"), indentStr * indentCount, fansi.Str(")"))
           )
 

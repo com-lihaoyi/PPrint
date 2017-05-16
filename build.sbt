@@ -1,7 +1,7 @@
 val baseSettings = Seq(
   organization := "com.lihaoyi",
   name := "pprint",
-  version := "0.5.0-SNAPSHOT",
+  version := "0.5.0",
   scalaVersion := "2.11.11",
   testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
   publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"),
@@ -86,3 +86,13 @@ lazy val pprint = crossProject.crossType(CrossType.Pure)
 
 lazy val pprintJVM = pprint.jvm
 lazy val pprintJS = pprint.js
+
+lazy val readme = scalatex.ScalatexReadme(
+  projectId = "readme",
+  wd = file(""),
+  url = "https://github.com/lihaoyi/pprint/tree/master",
+  source = "Readme"
+).settings(
+  scalaVersion := "2.11.8",
+  (unmanagedSources in Compile) += baseDirectory.value/".."/"project"/"Constants.scala"
+)

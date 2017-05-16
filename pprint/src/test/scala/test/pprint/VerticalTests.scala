@@ -168,6 +168,15 @@ object VerticalTests extends TestSuite{
 
       val Check = new Check(width = 25, renderTwice = true)
       'singleNested {
+        * - new Check(width = 5)(
+          List(1, 2, 3),
+          """List(
+            |  1,
+            |  2,
+            |  3
+            |)
+          """.stripMargin
+        )
         * - Check(
           List("12", "12", "12"),
           """List("12", "12", "12")"""
