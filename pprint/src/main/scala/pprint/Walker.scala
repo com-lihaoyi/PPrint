@@ -77,7 +77,14 @@ abstract class Walker{
       case x: Product =>
         val className = x.getClass.getName
         if (x.productArity == 0) Tree.Lazy(x.toString)
-        else (className.startsWith(tuplePrefix), className.lift(tuplePrefix.length)) match{
+        else if(x.productArity == 2 && Util.isOperator(x.productPrefix)){
+          Tree.Infix(
+            treeify(x.productElement(0)),
+
+            x.productPrefix,
+            treeify(x.productElement(1))
+          )
+        } else (className.startsWith(tuplePrefix), className.lift(tuplePrefix.length)) match{
           // leave out tuple1, so it gets printed as Tuple1(foo) instead of (foo)
           // Don't check the whole suffix, because of specialization there may be
           // funny characters after the digit

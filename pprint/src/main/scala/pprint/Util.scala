@@ -3,6 +3,16 @@ package pprint
 import scala.annotation.switch
 
 object Util{
+
+  def isOperator(ident: String) = {
+    ident(0) match{
+      case '<' | '~' | '!' | '@' | '#' | '%' |
+           '^' | '*' | '+' | '-' | /*'<' | */
+           '>' | '?' | ':' | '=' | '&' |
+           '|' | '/' | '\\' => true
+      case _ => false
+    }
+  }
   def escapeChar(c: Char,
                  sb: StringBuilder,
                  unicode: Boolean = true) = (c: @switch) match {

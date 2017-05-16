@@ -30,9 +30,6 @@ class Renderer(maxWidth: Int,
   }
 
 
-  def println(x: Any) = {
-    Predef.println(System.nanoTime() + "\t" + x)
-  }
   def rec(x: Tree, leftOffset: Int, indentCount: Int): Result = {
 
     x match{
@@ -123,7 +120,7 @@ class Renderer(maxWidth: Int,
 
       case Tree.Infix(lhs, op, rhs) =>
         rec(lhs, leftOffset, indentCount).flatMap{ (lhsNewline, lhsLastLineLength) =>
-          Result.fromString(" -> ").flatMap((_, _) =>
+          Result.fromString(" " + op + " ").flatMap((_, _) =>
             rec(rhs, lhsLastLineLength, indentCount)
           )
         }
