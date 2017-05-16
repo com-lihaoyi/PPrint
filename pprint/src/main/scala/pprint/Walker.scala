@@ -1,6 +1,5 @@
 package pprint
 
-
 /**
   * A lazy AST representing pretty-printable text. Models `foo(a, b)`
   * `foo op bar`, and terminals `foo` in both lazy and eager forms
@@ -29,10 +28,12 @@ object Tree{
   /**
     * xyz
     */
-  case class Lazy(body0: () => String) extends Tree{
-    lazy val body = body0()
-    lazy val hasNewLine = body.exists(c => c == '\n' || c == '\r')
-  }
+  case class Lazy(body0: Ctx => String) extends Tree
+
+  case class Ctx(width: Int,
+                 leftOffset: Int,
+                 indentCount: Int,
+                 indentStr: String)
 }
 
 abstract class Walker{
@@ -76,7 +77,7 @@ abstract class Walker{
 
       case x: Product =>
         val className = x.getClass.getName
-        if (x.productArity == 0) Tree.Lazy(x.toString)
+        if (x.productArity == 0) Tree.Lazy(ctx => x.toString)
         else if(x.productArity == 2 && Util.isOperator(x.productPrefix)){
           Tree.Infix(
             treeify(x.productElement(0)),
@@ -95,7 +96,7 @@ abstract class Walker{
             Tree.Apply(x.productPrefix, x.productIterator.map(x => treeify(x)))
         }
 
-      case x => Tree.Lazy(() => x.toString)
+      case x => Tree.Lazy(ctx => x.toString)
     }
   }
 

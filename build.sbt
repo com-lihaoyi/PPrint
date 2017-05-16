@@ -22,24 +22,7 @@ val baseSettings = Seq(
 
 baseSettings
 
-/**
- *
- */
 lazy val pprint = crossProject.crossType(CrossType.Pure)
-  .settings(
-    baseSettings,
-    name := "pprint",
-    libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "sourcecode" % "0.1.3",
-      "com.lihaoyi" %%% "fansi" % "0.2.4",
-      "com.lihaoyi" %%% "utest" % "0.4.7" % Test
-    )
-  )
-
-lazy val pprintJVM = pprint.jvm
-lazy val pprintJS = pprint.js
-
-lazy val tprint = crossProject.crossType(CrossType.Pure)
   .settings(
     baseSettings,
     scalacOptions ++= Seq(scalaBinaryVersion.value match {
@@ -50,6 +33,7 @@ lazy val tprint = crossProject.crossType(CrossType.Pure)
       "com.lihaoyi" %%% "fansi" % "0.2.4",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
       "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
+      "com.lihaoyi" %%% "sourcecode" % "0.1.3",
       "com.lihaoyi" %%% "utest" % "0.4.7" % Test,
       "com.chuusai" %%% "shapeless" % "2.3.2" % Test
     ),
@@ -94,15 +78,5 @@ lazy val tprint = crossProject.crossType(CrossType.Pure)
     }.taskValue
   )
 
-lazy val tprintJVM = tprint.jvm
-lazy val tprintJS = tprint.js
-
-lazy val tprintReadme = scalatex.ScalatexReadme(
-  projectId = "tprintReadme",
-  wd = file(""),
-  url = "https://github.com/lihaoyi/tprint/tree/master",
-  source = "Readme"
-).settings(
-  scalaVersion := "2.11.11",
-  (unmanagedSources in Compile) += baseDirectory.value / ".." / "project" / "Constants.scala"
-)
+lazy val pprintJVM = pprint.jvm
+lazy val pprintJS = pprint.js

@@ -1,6 +1,5 @@
 package pprint
 
-
 /**
   *
   * @param defaultWidth How wide to allow a pretty-printed value to become

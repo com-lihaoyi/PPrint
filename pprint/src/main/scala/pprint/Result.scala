@@ -1,7 +1,5 @@
 package pprint
 
-import scala.annotation.switch
-
 
 /**
   * The intermediate return type of the pretty-print system: provides an

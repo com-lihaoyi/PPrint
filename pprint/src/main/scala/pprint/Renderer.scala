@@ -1,7 +1,5 @@
 package pprint
 
-import scala.annotation.switch
-
 class Renderer(maxWidth: Int,
                colorApplyPrefix: fansi.Attrs,
                colorLiteral: fansi.Attrs,
@@ -125,7 +123,11 @@ class Renderer(maxWidth: Int,
           )
         }
 
-      case t: Tree.Lazy =>    Result.fromString(t.body)
+      case t: Tree.Lazy =>
+
+        lazy val str = t.body0(Tree.Ctx(maxWidth, leftOffset, indentCount, indentStr))
+        Result.fromString(str)
+
       case t: Tree.Literal => Result.fromString(colorLiteral(t.body))
 
     }
