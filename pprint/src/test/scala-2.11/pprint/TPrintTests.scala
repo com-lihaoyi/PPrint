@@ -1,4 +1,4 @@
-package test.pprint
+package pprint
 
 import pprint.TPrint
 import utest._

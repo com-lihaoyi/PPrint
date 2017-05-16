@@ -28,12 +28,14 @@ object Tree{
   /**
     * xyz
     */
-  case class Lazy(body0: Ctx => String) extends Tree
+  case class Lazy(body0: Ctx => Iterator[String]) extends Tree
 
   case class Ctx(width: Int,
                  leftOffset: Int,
                  indentCount: Int,
-                 indentStr: String)
+                 indentStr: String,
+                 literalColor: fansi.Attrs,
+                 applyPrefixColor: fansi.Attrs)
 }
 
 abstract class Walker{
@@ -77,7 +79,7 @@ abstract class Walker{
 
       case x: Product =>
         val className = x.getClass.getName
-        if (x.productArity == 0) Tree.Lazy(ctx => x.toString)
+        if (x.productArity == 0) Tree.Lazy(ctx => Iterator(x.toString))
         else if(x.productArity == 2 && Util.isOperator(x.productPrefix)){
           Tree.Infix(
             treeify(x.productElement(0)),
@@ -96,7 +98,7 @@ abstract class Walker{
             Tree.Apply(x.productPrefix, x.productIterator.map(x => treeify(x)))
         }
 
-      case x => Tree.Lazy(ctx => x.toString)
+      case x => Tree.Lazy(ctx => Iterator(x.toString))
     }
   }
 

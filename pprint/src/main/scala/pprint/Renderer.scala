@@ -125,8 +125,11 @@ class Renderer(maxWidth: Int,
 
       case t: Tree.Lazy =>
 
-        lazy val str = t.body0(Tree.Ctx(maxWidth, leftOffset, indentCount, indentStr))
-        Result.fromString(str)
+        lazy val str = t.body0(Tree.Ctx(
+          maxWidth, leftOffset, indentCount,
+          indentStr, colorLiteral, colorApplyPrefix
+        ))
+        new Truncated(str.map(fansi.Str(_)), maxWidth, height = 99999999).toResult
 
       case t: Tree.Literal => Result.fromString(colorLiteral(t.body))
 

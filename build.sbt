@@ -1,6 +1,6 @@
 val baseSettings = Seq(
   organization := "com.lihaoyi",
-  name := "tprint",
+  name := "pprint",
   version := "0.5.0-SNAPSHOT",
   scalaVersion := "2.11.11",
   testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
