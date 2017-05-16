@@ -4,6 +4,10 @@ sudo: required
 
 dist: trusty
 
+script:
+- sbt ++$TRAVIS_SCALA_VERSION pprintJVM/test
+- sbt ++$TRAVIS_SCALA_VERSION pprintJS/test
+
 jdk:
   - oraclejdk8
 
