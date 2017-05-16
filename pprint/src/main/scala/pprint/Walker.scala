@@ -35,9 +35,10 @@ object Tree{
   }
 }
 
-class Walker{
+abstract class Walker{
   val tuplePrefix = "scala.Tuple"
-  def treeify(x: Any): Tree = {
+  def additionalHandlers: PartialFunction[Any, Tree]
+  def treeify(x: Any): Tree = additionalHandlers.lift(x).getOrElse{
     x match{
 //
       case null => Tree.Literal("null")

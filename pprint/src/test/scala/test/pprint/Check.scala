@@ -1,11 +1,18 @@
 package test.pprint
-import pprint.{PPrinter, Truncated, Util}
-import utest._
+import pprint.PPrinter
 
-import scala.collection.mutable
-class Check(width: Int = 100, height: Int = 99999){
+class Check(width: Int = 100, height: Int = 99999, renderTwice: Boolean = false){
   def apply(t: Any, expected: String*) = {
-    val pprinted = PPrinter.BlackWhite.tokenize(t, width, height).map(_.plainText).mkString
-    utest.asserts.assert(expected.map(_.trim).contains(pprinted))
+    val printers =
+      if (!renderTwice) Seq(PPrinter.BlackWhite)
+      else Seq(PPrinter.BlackWhite, PPrinter.Color)
+    // Make sure we
+    for (pprinter <- printers){
+      val pprinted = fansi.Str.join(
+        PPrinter.BlackWhite.tokenize(t, width, height).toStream:_*
+      ).plainText
+
+      utest.asserts.assert(expected.map(_.trim).contains(pprinted))
+    }
   }
 }

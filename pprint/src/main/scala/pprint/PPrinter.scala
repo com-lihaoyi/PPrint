@@ -1,29 +1,30 @@
 package pprint
 
 
-class PPrinter extends Walker{
+/**
+  *
+  * @param defaultWidth How wide to allow a pretty-printed value to become
+  *                     before wrapping
+  * @param defaultHeight How tall to allow the pretty-printed output to become
+  *                      before truncated it with a `...`
+  * @param defaultIndent How many spaces to indent each nested [[Tree.Apply]] by
+  * @param colorLiteral What color to assign to literals like `"lol"` or 31337
+  * @param colorApplyPrefix What color to assign to `Foo` in `Foo(bar, baz)`
+  * @param additionalHandlers Provide this to override how certain types are
+  *                           pretty-printed at runtime
+  */
+case class PPrinter(defaultWidth: Int = 100,
+                    defaultHeight: Int = 50,
+                    defaultIndent: Int = 2,
+                    colorLiteral: fansi.Attrs = fansi.Color.Green,
+                    colorApplyPrefix: fansi.Attrs = fansi.Color.Yellow,
+                    additionalHandlers: PartialFunction[Any, Tree] = PartialFunction.empty)
+  extends Walker{ outer =>
+
   /**
     * How to convert a thing into a [[Tree]] that can be pretty-printed.
-    * Override me if you want to have customized pretty-printing for some
-    * specific types, and delegate the default case to `super.treeify`
-    * for the rest.
     */
   override def treeify(x: Any) = super.treeify(x)
-
-  /**
-    * What color should literals be in the pretty-printed output?
-    */
-  val colorLiteral: fansi.Attrs = fansi.Color.Green
-
-  /**
-    * What color should Foo in Foo(bar, baz) be in the pretty-printed output?
-    */
-  val colorApplyPrefix: fansi.Attrs = fansi.Color.Yellow
-
-  /**
-    * How much to indent the output by each time?
-    */
-  val indentStr: String = "  "
 
   /**
     * Logs a given value to stdout with some metadata to identify where the log
@@ -32,14 +33,11 @@ class PPrinter extends Walker{
     */
   def log(x: sourcecode.Text[Any],
           tag: String = "",
-          width: Int = 100,
-          height: Int = 50,
-          indent: Int = 2)
+          width: Int = defaultWidth,
+          height: Int = defaultHeight,
+          indent: Int = defaultIndent)
          (implicit line: sourcecode.Line,
           enclosing: sourcecode.Enclosing): Unit = {
-
-
-
 
     def joinSeq[T](seq: Seq[T], sep: T): Seq[T] = {
       seq.flatMap(x => Seq(x, sep)).dropRight(1)
@@ -72,8 +70,11 @@ class PPrinter extends Walker{
   /**
     * Converts an [[Any]] into a large colored `fansi.Str`
     */
-  def apply(x: Any, width: Int = 100, height: Int = 50, indent: Int = 2): fansi.Str = {
-    fansi.Str.join(tokenize(x, width, height, indent).toSeq:_*)
+  def apply(x: Any,
+            width: Int = defaultWidth,
+            height: Int = defaultHeight,
+            indent: Int = defaultIndent): fansi.Str = {
+    fansi.Str.join(this.tokenize(x, width, height, indent).toSeq:_*)
   }
 
   /**
@@ -81,14 +82,14 @@ class PPrinter extends Walker{
     * certain width and truncated at a certain height
     */
   def tokenize(x: Any,
-               width: Int = 100,
-               height: Int = 50,
-               indent: Int = 2): Iterator[fansi.Str] = {
+               width: Int = defaultWidth,
+               height: Int = defaultHeight,
+               indent: Int = defaultIndent): Iterator[fansi.Str] = {
 
     // The three stages within the pretty-printing process:
 
     // Convert the Any into a lazy Tree of `Apply`, `Infix` and `Lazy`/`Strict` literals
-    val tree = treeify(x)
+    val tree = this.treeify(x)
     // Render the `Any` into a stream of tokens, properly indented and wrapped
     // at the given width
     val renderer = new Renderer(width, colorApplyPrefix, colorLiteral, " " * indent)
@@ -102,8 +103,8 @@ class PPrinter extends Walker{
 
 object PPrinter {
   object Color extends PPrinter
-  object BlackWhite extends PPrinter{
-    override val colorLiteral = fansi.Attrs.Empty
-    override val colorApplyPrefix = fansi.Attrs.Empty
-  }
+  object BlackWhite extends PPrinter(
+    colorLiteral = fansi.Attrs.Empty,
+    colorApplyPrefix = fansi.Attrs.Empty
+  )
 }
