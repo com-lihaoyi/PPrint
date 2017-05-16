@@ -33,7 +33,7 @@ object Tree{
   case class Ctx(width: Int,
                  leftOffset: Int,
                  indentCount: Int,
-                 indentStr: String,
+                 indentStep: Int,
                  literalColor: fansi.Attrs,
                  applyPrefixColor: fansi.Attrs)
 }

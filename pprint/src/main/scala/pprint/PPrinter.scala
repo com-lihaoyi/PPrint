@@ -79,6 +79,17 @@ case class PPrinter(defaultWidth: Int = 100,
   }
 
   /**
+    * Converts an [[Any]] into a large colored `fansi.Str`
+    */
+  def println(x: Any,
+              width: Int = defaultWidth,
+              height: Int = defaultHeight,
+              indent: Int = defaultIndent,
+              initialOffset: Int = 0): fansi.Str = {
+    println(apply(x, width, height, indent, initialOffset))
+  }
+
+  /**
     * Converts an [[Any]] into an iterator of colored chunks, wrapped at a
     * certain width and truncated at a certain height
     */
@@ -94,7 +105,7 @@ case class PPrinter(defaultWidth: Int = 100,
     val tree = this.treeify(x)
     // Render the `Any` into a stream of tokens, properly indented and wrapped
     // at the given width
-    val renderer = new Renderer(width, colorApplyPrefix, colorLiteral, " " * indent)
+    val renderer = new Renderer(width, colorApplyPrefix, colorLiteral, indent)
     val rendered = renderer.rec(tree, initialOffset, 0).iter
     // Truncate the output stream once it's wrapped-at-width height goes
     // beyond the desired height

@@ -3,10 +3,10 @@ package pprint
 import scala.collection.mutable
 
 
-class NonEmptyIterator(input0: Iterator[fansi.Str]) extends Iterator[fansi.Str]{
+class NonEmptyIterator[T](input0: Iterator[T], isEmpty: T => Boolean) extends Iterator[T]{
   val input = input0.buffered
   def skipEmpty() = {
-    while(input.hasNext && input.head.length == 0) input.next()
+    while(input.hasNext && isEmpty(input.head)) input.next()
   }
   def hasNext = {
     skipEmpty()
@@ -34,7 +34,7 @@ class Truncated(chunks0: Iterator[fansi.Str],
 
   private[this] object Internal {
 
-    val chunks = new NonEmptyIterator(chunks0)
+    val chunks = new NonEmptyIterator[fansi.Str](chunks0, _.length == 0)
 
     var previousSlashN = false
     var previousSlashR = false
@@ -97,7 +97,12 @@ class Truncated(chunks0: Iterator[fansi.Str],
   def hasNext = (chunks.hasNext && completedLines < height - 1) || !lastLineFinished
 
 
-
+  /**
+    * [[Truncated]] streams the chunks one by one until it reaches the height
+    * limit; then, it buffers up to one entire row worth of chunks to check
+    * whether it overshoots. If it overshoots, it discards the chunks and prints
+    * "..." instead. If not, the buffered chunks get printed all at once.
+    */
   def next() = if (completedLines < height - 1) {
     val chunk = chunks.next()
     consumeChunkUntilLine(chunk, height - 1) match{
