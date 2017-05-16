@@ -43,6 +43,12 @@ lazy val pprint = crossProject.crossType(CrossType.Pure)
         Seq(baseDirectory.value / ".." / "src" / "main" / "scala-2.10+")
       else
         Seq()
+    } ,
+    unmanagedSourceDirectories in Test ++= {
+      if (Set("2.11", "2.12", "2.13.0-M1").contains(scalaBinaryVersion.value))
+        Seq(baseDirectory.value / ".." / "src" / "test" / "scala-2.10+")
+      else
+        Seq()
     },
     sourceGenerators in Compile += Def.task {
       val dir = (sourceManaged in Compile).value
