@@ -84,17 +84,23 @@ class Renderer(maxWidth: Int,
 
       def separator = Iterator(Renderer.commaNewLine, indentPlusOne)
 
-      if (totalHorizontalWidth <= maxWidth && childCompletedLineCount == 0) {
-
-        val iter =
-          applyHeader ++
-          Renderer.joinIter(buffer.iterator.map(_.iterator), Iterator(Renderer.commaSpace)) ++
-          Iterator(Renderer.closeParen)
+      if (
+        totalHorizontalWidth <= maxWidth &&
+        childCompletedLineCount == 0 &&
+        !lastChildIter.hasNext
+      ) {
+        val iter = Result.concat(
+          () => applyHeader,
+          () => Renderer.joinIter(
+            buffer.iterator.map(_.iterator),
+            Iterator(Renderer.commaSpace)
+          ),
+          () => Iterator(Renderer.closeParen)
+        )
 
         val length: Int = buffer.iterator.map(_.iterator.map(_.length).sum).sum
         new Result(iter, 0, length)
       } else {
-
         def bufferedFragments = Renderer.joinIter(
           for((v, i) <- buffer.iterator.zipWithIndex) yield{
             if (i < buffer.length-1) v.iterator
@@ -114,15 +120,16 @@ class Renderer(maxWidth: Int,
           separator
         )
 
-        def iter =
-          applyHeader ++
-          Iterator(Renderer.newLine, indentPlusOne) ++
-          allFragments ++
-          Iterator(
+        def iter = Result.concat(
+          () => applyHeader,
+          () => Iterator(Renderer.newLine, indentPlusOne),
+          () => allFragments,
+          () => Iterator(
             Renderer.newLine,
             Renderer.indent(indentCount * indentStep),
             Renderer.closeParen
           )
+        )
 
 
         new Result(iter, childCompletedLineCount + 2, indentCount * indentStep + 1)

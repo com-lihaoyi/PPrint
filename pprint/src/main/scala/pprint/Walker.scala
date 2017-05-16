@@ -43,7 +43,7 @@ abstract class Walker{
   def additionalHandlers: PartialFunction[Any, Tree]
   def treeify(x: Any): Tree = additionalHandlers.lift(x).getOrElse{
     x match{
-//
+
       case null => Tree.Literal("null")
       case x: Char =>
         val sb = new StringBuilder

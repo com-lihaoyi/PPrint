@@ -10,11 +10,11 @@ class Result(val iter: Iterator[fansi.Str],
              completedLineCount0: => Int,
              lastLineLength0: => Int){
   lazy val completedLineCount = {
-    assert(iter.isEmpty)
+    require(iter.isEmpty)
     completedLineCount0
   }
   lazy val lastLineLength = {
-    assert(iter.isEmpty)
+    require(iter.isEmpty)
     lastLineLength0
   }
   def flatMap(f: (Int, Int) => Result): Result = {
@@ -24,6 +24,7 @@ class Result(val iter: Iterator[fansi.Str],
     val mergedIterator = Result.concat(
       () => iter,
       () => {
+        require(!iter.hasNext)
         val newResult = f(completedLineCount, lastLineLength0)
         newResult.iter.map{ x =>
           if (!newResult.iter.hasNext){
@@ -56,6 +57,10 @@ object Result{
   // val middle = first ++ lastChildIter ++ sep ++ remaining
   //
   // Was throwing weird NullPointerExceptions I couldn't figure out =(
+  //
+  // Also, ++ didn't seem to be sufficiently lazy, so it was forcing
+  // things earlier than it really needed to. It isn't documented anywhere
+  // how lazy it's meant to be, whereas `concat` here is transparently lazy
   def concat[T](is: (() => Iterator[T])*) = new Iterator[T]{
     var thunks = is.toList
     var head: Iterator[T] = null

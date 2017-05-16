@@ -81,12 +81,12 @@ case class PPrinter(defaultWidth: Int = 100,
   /**
     * Converts an [[Any]] into a large colored `fansi.Str`
     */
-  def println(x: Any,
+  def pprintln(x: Any,
               width: Int = defaultWidth,
               height: Int = defaultHeight,
               indent: Int = defaultIndent,
-              initialOffset: Int = 0): fansi.Str = {
-    println(apply(x, width, height, indent, initialOffset))
+              initialOffset: Int = 0): Unit = {
+    Predef.println(apply(x, width, height, indent, initialOffset))
   }
 
   /**
