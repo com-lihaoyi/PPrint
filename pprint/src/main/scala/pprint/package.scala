@@ -4,4 +4,8 @@
   * Hard-coded and inflexible, but feel free to instantiate your own
   * PPrint if you want to customize it.
   */
-package object pprint extends PPrinter
+package object pprint extends PPrinter{
+  def tprint[T: TPrint](implicit config: TPrintColors) = {
+    implicitly[TPrint[T]].render(config)
+  }
+}
