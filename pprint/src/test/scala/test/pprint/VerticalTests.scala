@@ -21,7 +21,53 @@ object VerticalTests extends TestSuite{
 
 
   val tests = TestSuite{
+    'truncatedAttrs{
+      def check(input: Iterator[String],
+                width: Int,
+                height: Int,
+                expectedCompletedLineCount: Int,
+                expectedLastLineLength: Int) = {
 
+        val t = new pprint.Truncated(
+          input.map(fansi.Str(_)),
+          width,
+          height
+        )
+
+        t.foreach(_ => ())
+
+        val completedLineCount = t.completedLineCount
+        val lastLineLength = t.lastLineLength
+        assert(
+          completedLineCount == expectedCompletedLineCount,
+          lastLineLength == expectedLastLineLength
+        )
+      }
+      check(
+        Iterator("1234567"),
+        width = 50, height = 50,
+        expectedCompletedLineCount = 0,
+        expectedLastLineLength = 7
+      )
+      check(
+        Iterator("1234567"),
+        width = 7, height = 50,
+        expectedCompletedLineCount = 0,
+        expectedLastLineLength = 7
+      )
+      check(
+        Iterator("1234567"),
+        width = 6, height = 50,
+        expectedCompletedLineCount = 1,
+        expectedLastLineLength = 1
+      )
+      check(
+        Iterator("12", "34", "5", "67"),
+        width = 6, height = 50,
+        expectedCompletedLineCount = 1,
+        expectedLastLineLength = 1
+      )
+    }
     'config{
       val res1 = pprint.apply(List(1, 2, 3)).plainText
       assert(res1 == "List(1, 2, 3)")

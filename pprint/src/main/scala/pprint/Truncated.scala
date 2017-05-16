@@ -30,11 +30,11 @@ class Truncated(chunks0: Iterator[fansi.Str],
                 height: Int,
                 truncationMarker: String = "...")
     extends Iterator[fansi.Str]{
+  val lineLengths = collection.mutable.Buffer(0)
 
   private[this] object Internal {
-    val chunks = new NonEmptyIterator(chunks0)
 
-    val lineLengths = collection.mutable.Buffer(0)
+    val chunks = new NonEmptyIterator(chunks0)
 
     var previousSlashN = false
     var previousSlashR = false
@@ -74,9 +74,26 @@ class Truncated(chunks0: Iterator[fansi.Str],
       if (i == chunk.length) None else Some(i)
     }
 
+    var isTruncated0 = false
   }
 
   import Internal._
+
+  def completedLineCount = {
+    assert(!hasNext)
+    lineLengths.length - 1
+  }
+  def lastLineLength = {
+    assert(!hasNext)
+    lineLengths(lineLengths.length-1)
+  }
+  def isTruncated = {
+    assert(!hasNext)
+    isTruncated0
+  }
+
+  def toResult = new Result(this, completedLineCount, lastLineLength)
+
   def hasNext = (chunks.hasNext && completedLines < height - 1) || !lastLineFinished
 
 
@@ -121,7 +138,10 @@ class Truncated(chunks0: Iterator[fansi.Str],
 
     lastLineFinished = true
 
-    if (charsLeftOver || chunks.hasNext) fansi.Str(truncationMarker)
+    if (charsLeftOver || chunks.hasNext) {
+      isTruncated0 = true
+      fansi.Str(truncationMarker)
+    }
     else buffer.map(_.render).mkString
   }else{
     throw new java.util.NoSuchElementException("next on empty iterator")

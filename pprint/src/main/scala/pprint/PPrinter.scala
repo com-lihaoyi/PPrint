@@ -35,7 +35,8 @@ case class PPrinter(defaultWidth: Int = 100,
           tag: String = "",
           width: Int = defaultWidth,
           height: Int = defaultHeight,
-          indent: Int = defaultIndent)
+          indent: Int = defaultIndent,
+          initialOffset: Int = 0)
          (implicit line: sourcecode.Line,
           enclosing: sourcecode.Enclosing): Unit = {
 
@@ -73,7 +74,8 @@ case class PPrinter(defaultWidth: Int = 100,
   def apply(x: Any,
             width: Int = defaultWidth,
             height: Int = defaultHeight,
-            indent: Int = defaultIndent): fansi.Str = {
+            indent: Int = defaultIndent,
+            initialOffset: Int = 0): fansi.Str = {
     fansi.Str.join(this.tokenize(x, width, height, indent).toSeq:_*)
   }
 
@@ -84,7 +86,8 @@ case class PPrinter(defaultWidth: Int = 100,
   def tokenize(x: Any,
                width: Int = defaultWidth,
                height: Int = defaultHeight,
-               indent: Int = defaultIndent): Iterator[fansi.Str] = {
+               indent: Int = defaultIndent,
+               initialOffset: Int = 0): Iterator[fansi.Str] = {
 
     // The three stages within the pretty-printing process:
 
@@ -93,7 +96,7 @@ case class PPrinter(defaultWidth: Int = 100,
     // Render the `Any` into a stream of tokens, properly indented and wrapped
     // at the given width
     val renderer = new Renderer(width, colorApplyPrefix, colorLiteral, " " * indent)
-    val rendered = renderer.rec(tree, 0, 0).iter
+    val rendered = renderer.rec(tree, initialOffset, 0).iter
     // Truncate the output stream once it's wrapped-at-width height goes
     // beyond the desired height
     val truncated = new Truncated(rendered, width, height)

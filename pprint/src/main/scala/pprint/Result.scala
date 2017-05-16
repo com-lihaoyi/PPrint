@@ -9,27 +9,27 @@ import scala.annotation.switch
   * around that output that is only available after the iterator is exhausted
   */
 class Result(val iter: Iterator[fansi.Str],
-             hasNewline0: => Boolean,
+             completedLineCount0: => Int,
              lastLineLength0: => Int){
-  lazy val hasNewline = {
+  lazy val completedLineCount = {
     assert(iter.isEmpty)
-    hasNewline0
+    completedLineCount0
   }
   lazy val lastLineLength = {
     assert(iter.isEmpty)
     lastLineLength0
   }
-  def flatMap(f: (Boolean, Int) => Result): Result = {
-    var newHasNewline = false
+  def flatMap(f: (Int, Int) => Result): Result = {
+    var newCompletedLineCount = 0
     var newLastLineLength = 0
 
     val mergedIterator = Result.concat(
       () => iter,
       () => {
-        val newResult = f(hasNewline, lastLineLength0)
+        val newResult = f(completedLineCount, lastLineLength0)
         newResult.iter.map{ x =>
           if (!newResult.iter.hasNext){
-            newHasNewline = newResult.hasNewline
+            newCompletedLineCount = newResult.completedLineCount
             newLastLineLength = newResult.lastLineLength
           }
           x
@@ -38,8 +38,8 @@ class Result(val iter: Iterator[fansi.Str],
     )
     new Result(
       mergedIterator,
-      newHasNewline | hasNewline,
-      if (newHasNewline) newLastLineLength
+      newCompletedLineCount + completedLineCount,
+      if (newCompletedLineCount > 0) newLastLineLength
       else newLastLineLength + lastLineLength
     )
 
@@ -49,7 +49,7 @@ class Result(val iter: Iterator[fansi.Str],
 object Result{
   def fromString(s: => fansi.Str) = {
     lazy val lines = s.plainText.lines.toArray
-    new Result(Iterator(s), lines.length > 1, lines.last.length)
+    new Result(Iterator(s), lines.length - 1, lines.last.length)
   }
 
   // I have no idea why this is necessary, but without doing this, the
