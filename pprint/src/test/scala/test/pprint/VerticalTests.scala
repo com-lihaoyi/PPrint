@@ -437,11 +437,38 @@ object VerticalTests extends TestSuite{
       }
 
       'longLineTruncated{
-        val Check = new Check(width = 100, height = 3)
-        Check(
-          "a" * 1000,
-          """"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..."""
-        )
+        // These print out one long line, but at the width that the
+        // pretty-printer is configured to, it (including any trailing ...)
+        // wraps to fit within the desired width and height
+        * - {
+          val Check = new Check(width = 5, height = 3)
+          Check(
+            "a" * 13,
+            "\"aaaa" +
+             "aaaaa" +
+             "aaaa\""
+          )
+        }
+        * - {
+          val Check = new Check(width = 5, height = 3)
+          Check(
+            "a" * 1000,
+            "\"aaaa" +
+             "aaaaa" +
+             "..."
+          )
+        }
+        * - {
+          val Check = new Check(width = 60, height = 5)
+          Check(
+            "a" * 1000,
+            "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+             "..."
+          )
+        }
       }
 
       'stream{

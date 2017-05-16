@@ -17,7 +17,6 @@ class Check(width: Int = 100, height: Int = 9999){
     def next() = {
       skipEmpty()
       val chunk = input.next()
-      println(fansi.Color.Magenta("chunk: ") ++ fansi.Color.Green(Util.literalize(chunk.plainText)))
       chunk
     }
   }
@@ -30,7 +29,6 @@ class Check(width: Int = 100, height: Int = 9999){
     def handleNormalChar(char: Char) = {
       previousSlashN = false
       previousSlashR = false
-      println(fansi.Color.Yellow("char: ") ++ fansi.Color.Green(Util.literalize(char.toString)))
       if (char == '\n' && previousSlashR || char == '\r' && previousSlashN){
         // do nothing
       }else if (char == '\n'){
@@ -64,42 +62,49 @@ class Check(width: Int = 100, height: Int = 9999){
         handleNormalChar(char)
         i += 1
       }
-      i
+      if (i == chunk.length) None else Some(i)
     }
+
     def next() = if (completedLines < height - 1) {
       val chunk = chunks.next()
+      consumeChunkUntilLine(chunk, height - 1) match{
+        case None =>
+          if (!chunks.hasNext) lastLineFinished = true
+          chunk
+        case Some(i) =>
+          // chunk was partially consumed. This should only happen if the chunk
+          // is overshooting the vertical limit
 
-
-      val i = consumeChunkUntilLine(chunk, height - 1)
-      if (completedLines == height - 1) {
-        lastChunkLeftover = chunk.substring(i, chunk.length)
-        chunk.substring(0, i)
-      } else if (i == chunk.length) {
-        if (!chunks.hasNext) lastLineFinished = true
-        chunk
-      } else {
-        lastChunkLeftover = chunk.substring(i, chunk.length)
-        chunk.substring(0, i)
+          // If the last line is not empty, it means there is a character
+          // on that last line. In such a case
+          val splitPoint = if (lineLengths.last != 0) i - 1 else i
+          lastChunkLeftover = chunk.substring(splitPoint, chunk.length)
+          chunk.substring(0, splitPoint)
       }
+
     }else if (!lastLineFinished) {
       val buffer = mutable.Buffer.empty[fansi.Str]
       var charsLeftOver = false
-      val i = consumeChunkUntilLine(lastChunkLeftover, height)
-      if (i < lastChunkLeftover.length) charsLeftOver = true
-      if (i > 0) buffer.append(lastChunkLeftover.substring(0, i - 1))
+      consumeChunkUntilLine(lastChunkLeftover, height) match{
+        case None => buffer.append(lastChunkLeftover)
+        case Some(i) =>
+          charsLeftOver = true
+          buffer.append(lastChunkLeftover.substring(0, i - 1))
+      }
       while(chunks.hasNext && completedLines < height){
         val chunk = chunks.next()
-        val chars = chunk.getChars
 
-        val i = consumeChunkUntilLine(chunk, height)
-
-        if (i > 0) buffer.append(chunk.substring(0, i))
-        else if (i < chars.length) {
-          charsLeftOver = true
+        consumeChunkUntilLine(chunk, height) match{
+          case None => buffer.append(chunk)
+          case Some(i) =>
+            charsLeftOver = true
+            buffer.append(chunk.substring(0, i))
         }
+
       }
 
       lastLineFinished = true
+
       if (charsLeftOver || chunks.hasNext) fansi.Str("...")
       else buffer.map(_.render).mkString
     }else{
