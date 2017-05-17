@@ -243,6 +243,11 @@
     @sect{0.5.0}
       @ul
         @li
+          Performance improvements that speed up my benchmarks by 30-50%
+
+    @sect{0.5.0}
+      @ul
+        @li
           Ground-up rewrite to use manual pretty-printer registration instead
           of implicit derivation. @hl.scala{pprint.log} and @hl.scala{pprint.tokenize}
           still exist, but most of the internals have been totally rewritten.

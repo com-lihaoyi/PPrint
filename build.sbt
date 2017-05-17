@@ -1,7 +1,7 @@
 val baseSettings = Seq(
   organization := "com.lihaoyi",
   name := "pprint",
-  version := "0.5.0",
+  version := _root_.pprint.Constants.version,
   scalaVersion := "2.11.11",
   testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
   publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"),
