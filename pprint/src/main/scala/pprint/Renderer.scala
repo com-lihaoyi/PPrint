@@ -1,28 +1,12 @@
 package pprint
 object Renderer{
-  class JoinedIterator[T](it0: Iterator[Iterator[T]], joiner: => Iterator[T])
-    extends Iterator[Iterator[T]]{
-    val it = new NonEmptyIterator[Iterator[T]](it0, !_.hasNext)
-    var count = 0
-    def hasNext = it.hasNext
-
-
-    def next() = {
-      val res =
-        if (count % 2 == 0) it.next()
-        else joiner
-      count += 1
-      res
-    }
-  }
-
   /**
     * Basically like mkString, but for nested iterators. Used whenever
     * you want to put stuff "in between" the elements of the larger
     * iterator
     */
   def joinIter[T](it0: Iterator[Iterator[T]], joiner: => Iterator[T]) = {
-    new JoinedIterator(it0, joiner).flatten
+    new Util.ConcatIterator(it0, () => joiner)
   }
 
   val openParen = fansi.Str("(")
@@ -89,7 +73,7 @@ class Renderer(maxWidth: Int,
         childCompletedLineCount == 0 &&
         !lastChildIter.hasNext
       ) {
-        val iter = Result.concat(
+        val iter = Util.concat(
           () => applyHeader,
           () => Renderer.joinIter(
             buffer.iterator.map(_.iterator),
@@ -114,13 +98,12 @@ class Renderer(maxWidth: Int,
           separator
         )
 
+        def allFragments =
+          if (buffer.isEmpty) nonBufferedFragments
+          else if (!body.hasNext) bufferedFragments
+          else Renderer.joinIter(Iterator(bufferedFragments, nonBufferedFragments), separator)
 
-        def allFragments = Renderer.joinIter(
-          Iterator(bufferedFragments, nonBufferedFragments),
-          separator
-        )
-
-        def iter = Result.concat(
+        def iter = Util.concat(
           () => applyHeader,
           () => Iterator(Renderer.newLine, indentPlusOne),
           () => allFragments,

@@ -19,7 +19,7 @@ object AdvancedTests extends TestSuite{
 
 
   val tests = TestSuite{
-    'check{
+    'applyPrefixWidthExactlyMaxWidth{
       case class Foo(is: List[Int])
       val rendered = pprint.apply(
         Foo(List(1)),

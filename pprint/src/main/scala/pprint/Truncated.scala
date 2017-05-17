@@ -3,23 +3,6 @@ package pprint
 import scala.collection.mutable
 
 
-class NonEmptyIterator[T](input0: Iterator[T], isEmpty: T => Boolean) extends Iterator[T]{
-  val input = input0.buffered
-  def skipEmpty() = {
-    while(input.hasNext && isEmpty(input.head)) input.next()
-  }
-  def hasNext = {
-    skipEmpty()
-    input.hasNext
-  }
-
-  def next() = {
-    skipEmpty()
-    val chunk = input.next()
-    chunk
-  }
-}
-
 /**
   * Wraps an input iterator of colored [[fansi.Str]]s, and produces the same
   * [[fansi.Str]]s but truncated once the wrapped-at-[[width]] text reaches
@@ -34,7 +17,7 @@ class Truncated(chunks0: Iterator[fansi.Str],
 
   private[this] object Internal {
 
-    val chunks = new NonEmptyIterator[fansi.Str](chunks0, _.length == 0)
+    val chunks = chunks0.filter(_.length > 0)
 
     var previousSlashN = false
     var previousSlashR = false

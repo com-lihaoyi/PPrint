@@ -23,7 +23,7 @@ class Result(val iter: Iterator[fansi.Str],
     var newCompletedLineCount = 0
     var newLastLineLength = 0
 
-    val mergedIterator = Result.concat(
+    val mergedIterator = Util.concat(
       () => iter,
       () => {
         require(!iter.hasNext)
@@ -51,38 +51,5 @@ object Result{
   def fromString(s: => fansi.Str) = {
     lazy val lines = s.plainText.lines.toArray
     new Result(Iterator(s), lines.length - 1, lines.last.length)
-  }
-
-  // I have no idea why this is necessary, but without doing this, the
-  // default way of concatenation e.g.
-  //
-  // val middle = first ++ lastChildIter ++ sep ++ remaining
-  //
-  // Was throwing weird NullPointerExceptions I couldn't figure out =(
-  //
-  // Also, ++ didn't seem to be sufficiently lazy, so it was forcing
-  // things earlier than it really needed to. It isn't documented anywhere
-  // how lazy it's meant to be, whereas `concat` here is transparently lazy
-  def concat[T](is: (() => Iterator[T])*) = new Iterator[T]{
-    var thunks = is.toList
-    val it0 = is.iterator.map(_())
-    var head: Iterator[T] = null
-    @tailrec private[this] def check(): Boolean = {
-      if (head == null && !it0.hasNext) false
-      else if (head != null && head.hasNext) true
-      else if (!it0.hasNext) false
-      else {
-        head = it0.next()
-        check()
-      }
-    }
-
-    def hasNext = check()
-
-
-    def next() = {
-      check()
-      head.next()
-    }
   }
 }
