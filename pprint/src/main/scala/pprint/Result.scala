@@ -1,5 +1,7 @@
 package pprint
 
+import scala.annotation.tailrec
+
 
 /**
   * The intermediate return type of the pretty-print system: provides an
@@ -63,18 +65,20 @@ object Result{
   // how lazy it's meant to be, whereas `concat` here is transparently lazy
   def concat[T](is: (() => Iterator[T])*) = new Iterator[T]{
     var thunks = is.toList
+    val it0 = is.iterator.map(_())
     var head: Iterator[T] = null
-    def check() = {
-      while (thunks.nonEmpty && (head == null || head.isEmpty)) {
-        head = thunks.head()
-        thunks = thunks.tail
+    @tailrec private[this] def check(): Boolean = {
+      if (head == null && !it0.hasNext) false
+      else if (head != null && head.hasNext) true
+      else if (!it0.hasNext) false
+      else {
+        head = it0.next()
+        check()
       }
     }
 
-    def hasNext = {
-      check()
-      head != null && (thunks.nonEmpty || head.nonEmpty)
-    }
+    def hasNext = check()
+
 
     def next() = {
       check()
