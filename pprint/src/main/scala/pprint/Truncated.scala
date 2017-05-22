@@ -86,7 +86,7 @@ class Truncated(chunks0: Iterator[fansi.Str],
     * whether it overshoots. If it overshoots, it discards the chunks and prints
     * "..." instead. If not, the buffered chunks get printed all at once.
     */
-  def next() = if (completedLines < height - 1) {
+  def next() = if (chunks.hasNext && completedLines < height - 1) {
     val chunk = chunks.next()
     consumeChunkUntilLine(chunk, height - 1) match{
       case None =>

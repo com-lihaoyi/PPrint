@@ -89,8 +89,9 @@ object HorizontalTests extends TestSuite{
           Check(Some(None), "Some(None)")
         }
         'Default{
-//           Check(() => (), "<function0>")
-//           Check((i: Int) => (), "<function1>")
+          val baos = new java.io.ByteArrayOutputStream()
+          Check(baos, baos.toString)
+
         }
       }
 
