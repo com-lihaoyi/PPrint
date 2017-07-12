@@ -7,10 +7,10 @@ val baseSettings = Seq(
   publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"),
   crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2"),
   scmInfo := Some(ScmInfo(
-    browseUrl = url("https://github.com/lihaoyi/TPrint"),
-    connection = "scm:git:git@github.com:lihaoyi/TPrint.git"
+    browseUrl = url("https://github.com/lihaoyi/PPrint"),
+    connection = "scm:git:git@github.com:lihaoyi/PPrint.git"
   )),
-  homepage := Some(url("https://github.com/lihaoyi/TPrint")),
+  homepage := Some(url("https://github.com/lihaoyi/PPrint")),
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   developers += Developer(
     email = "haoyi.sg@gmail.com",
