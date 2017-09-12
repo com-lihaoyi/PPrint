@@ -59,7 +59,7 @@
     @hl.scala
       libraryDependencies += "com.lihaoyi" %% "pprint" % "@pprint.Constants.version"
     @p
-      Or for Scala.js:
+      Or for Scala.js/Scala-Native:
     @hl.scala
       libraryDependencies += "com.lihaoyi" %%% "pprint" % "@pprint.Constants.version"
     @p
