@@ -240,6 +240,10 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.5.3}
+      @ul
+        @li
+          Support for Scala-Native
     @sect{0.5.2}
       @ul
         @li
