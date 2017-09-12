@@ -73,26 +73,6 @@ object TPrintTests extends TestSuite{
         check[Int {val x: Int}]("Int{val x: Int}")
         check[Int with String]("Int with String")
       }
-
-      'infix {
-        object X {
-          class ++[Int, String]
-        }
-
-        check[X.++[Int, String]]("X.++[Int, String]")
-        check[Either[Int, String]]("Either[Int, String]")
-
-        import X.++
-        check[Int ++ String]("Int ++ String")
-        check[++[Int, String]]("Int ++ String")
-
-        import shapeless._
-
-        check[Int :: String :: (Char, Seq[Float]) :: HNil](
-          "Int :: String :: (Char, Seq[Float]) :: HNil"
-        )
-
-      }
       'existential{
         check[{type T = Int}]("{type T = Int}")
 

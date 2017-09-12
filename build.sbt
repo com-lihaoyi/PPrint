@@ -22,7 +22,8 @@ val baseSettings = Seq(
 
 baseSettings
 
-lazy val pprint = crossProject.crossType(CrossType.Pure)
+lazy val pprint = _root_.sbtcrossproject.CrossPlugin.autoImport
+  .crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(
     baseSettings,
     scalacOptions ++= Seq(scalaBinaryVersion.value match {
@@ -30,23 +31,22 @@ lazy val pprint = crossProject.crossType(CrossType.Pure)
       case _ => "-target:jvm-1.7"
     }),
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "fansi" % "0.2.4",
+      "com.lihaoyi" %%% "fansi" % "0.2.5",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
       "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
-      "com.lihaoyi" %%% "sourcecode" % "0.1.3",
-      "com.lihaoyi" %%% "utest" % "0.4.7" % Test,
-      "com.chuusai" %%% "shapeless" % "2.3.2" % Test
+      "com.lihaoyi" %%% "sourcecode" % "0.1.4",
+      "com.lihaoyi" %%% "utest" % "0.5.3" % Test
     ),
 
     unmanagedSourceDirectories in Compile ++= {
       if (Set("2.11", "2.12", "2.13.0-M1").contains(scalaBinaryVersion.value))
-        Seq(baseDirectory.value / ".." / "src" / "main" / "scala-2.10+")
+        Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-2.10+")
       else
         Seq()
     } ,
     unmanagedSourceDirectories in Test ++= {
       if (Set("2.11", "2.12", "2.13.0-M1").contains(scalaBinaryVersion.value))
-        Seq(baseDirectory.value / ".." / "src" / "test" / "scala-2.10+")
+        Seq(baseDirectory.value / ".." / "shared" / "src" / "test" / "scala-2.10+")
       else
         Seq()
     },
@@ -83,10 +83,13 @@ lazy val pprint = crossProject.crossType(CrossType.Pure)
       Seq(file)
     }.taskValue
   )
+  .nativeSettings(
+    nativeLinkStubs := true
+  )
 
 lazy val pprintJVM = pprint.jvm
 lazy val pprintJS = pprint.js
-
+lazy val pprintNative = pprint.native
 lazy val readme = scalatex.ScalatexReadme(
   projectId = "readme",
   wd = file(""),

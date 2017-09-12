@@ -3,7 +3,6 @@ package test.pprint
 import utest._
 import scala.collection.{immutable => imm, mutable}
 object HorizontalTests extends TestSuite{
-  override def formatTruncate: Int = 500000
   val Check = new Check(9999)
   val tests = TestSuite{
     'Horizontal {
@@ -33,12 +32,12 @@ object HorizontalTests extends TestSuite{
           * - Check(-123456789012345L, "-123456789012345L")
         }
         'Float {
-          * - Check(0.75F, "0.75F")
-          * - Check(-13.5F, "-13.5F")
+          * - Check(0.75F, "0.75F", "0.750000F")
+          * - Check(-13.5F, "-13.5F", "-13.500000F")
         }
         'Double {
-          * - Check(0.125, "0.125", "0.125F")
-          * - Check(-0.125, "-0.125", "-0.125F")
+          * - Check(0.125, "0.125", "0.125F", "0.125000")
+          * - Check(-0.125, "-0.125", "-0.125F", "-0.125000")
         }
         'String {
           val tq = "\"\"\""
@@ -159,7 +158,8 @@ object HorizontalTests extends TestSuite{
 
             (1, 2, "123", (100L, 200L), 1.5F, 0.1),
             """(1, 2, "123", (100L, 200L), 1.5F, 0.1)""",
-            """(1, 2, "123", (100L, 200L), 1.5F, 0.1F)"""
+            """(1, 2, "123", (100L, 200L), 1.5F, 0.1F)""",
+            """(1, 2, "123", (100L, 200L), 1.500000F, 0.100000)"""
           )
         }
         'infix{

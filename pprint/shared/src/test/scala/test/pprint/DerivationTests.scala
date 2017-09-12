@@ -69,7 +69,8 @@ object DerivationTests extends TestSuite{
       Check(
         Delta.Insert(List("omg", "wtf"), (1, 0.2)),
         """Insert(List("omg", "wtf"), (1, 0.2))""",
-        """Insert(List("omg", "wtf"), (1, 0.2F))"""
+        """Insert(List("omg", "wtf"), (1, 0.2F))""",
+        """Insert(List("omg", "wtf"), (1, 0.200000))"""
       )
       Check(
         DeltaInvariant.Clear[Int, String](),
@@ -87,7 +88,8 @@ object DerivationTests extends TestSuite{
       Check(
         Delta.Insert(List("omg", "wtf"), (1, 0.2)): Delta[List[String], (Int, Double)],
         """Insert(List("omg", "wtf"), (1, 0.2))""",
-        """Insert(List("omg", "wtf"), (1, 0.2F))"""
+        """Insert(List("omg", "wtf"), (1, 0.2F))""",
+        """Insert(List("omg", "wtf"), (1, 0.200000))"""
       )
       Check(
         DeltaInvariant.Clear(): DeltaInvariant[Int, String],
@@ -118,7 +120,15 @@ object DerivationTests extends TestSuite{
       Check(
         Generic.ADT(x, x: java.io.Serializable, "lol", "lol": Any, (1.5, 2.5), (1.5, 2.5): AnyRef),
         s"""ADT($x, $x, "lol", "lol", (1.5, 2.5), (1.5, 2.5))""",
-        s"""ADT($x, $x, "lol", "lol", (1.5F, 2.5F), (1.5F, 2.5F))"""
+        s"""ADT($x, $x, "lol", "lol", (1.5F, 2.5F), (1.5F, 2.5F))""",
+        s"""ADT(
+           |  $x,
+           |  $x,
+           |  "lol",
+           |  "lol",
+           |  (1.500000, 2.500000),
+           |  (1.500000, 2.500000)
+           |)""".stripMargin
       )
 
     }

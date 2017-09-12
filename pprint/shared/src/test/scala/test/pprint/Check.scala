@@ -12,7 +12,7 @@ class Check(width: Int = 100, height: Int = 99999, renderTwice: Boolean = false)
         PPrinter.BlackWhite.tokenize(t, width, height).toStream:_*
       ).plainText
 
-      utest.asserts.assert(expected.map(_.trim).contains(pprinted))
+      utest.assert(expected.map(_.trim).contains(pprinted))
     }
   }
 }
