@@ -20,6 +20,12 @@ matrix:
   include:
     - scala: 2.10.6
       jdk: openjdk7
+    - scala: SCALA_NATIVE
+      jdk: oraclejdk8
+      before_install:
+      - curl https://raw.githubusercontent.com/scala-native/scala-native/2941b8ba26de42/bin/travis_setup.sh | bash -
+      script:
+      - sbt pprintNative/test
 
 # Taken from https://github.com/typelevel/cats/blob/master/.travis.yml
 cache:
