@@ -211,6 +211,21 @@
       used for highlighting, as well as passing in @code{additionalHandlers} to
       customize pretty-printing of various types.
 
+    @h1.scala
+
+      scala> pprint.pprintln(Math.PI) 
+      3.141592653589793
+
+      scala> val pprint2 = 
+        pprint.copy(
+          additionalHandlers = { 
+            case value: Double =>  pprint.Tree.Literal(f"$value%1.5f") /* 5 digit precision */ 
+          }
+        ) 
+
+      scala> pprint2.pprintln(Math.PI) 
+      3.14159
+
   @sect{TPrint}
     @p
       Apart from pretty-printing values, PPrint also allows you to pretty-print types
