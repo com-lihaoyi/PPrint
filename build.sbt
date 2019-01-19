@@ -2,10 +2,10 @@ val baseSettings = Seq(
   organization := "com.lihaoyi",
   name := "pprint",
   version := _root_.pprint.Constants.version,
-  scalaVersion := "2.11.11",
+  scalaVersion := "2.11.12",
   testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
   publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"),
-  crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2"),
+  crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.2"),
   scmInfo := Some(ScmInfo(
     browseUrl = url("https://github.com/lihaoyi/PPrint"),
     connection = "scm:git:git@github.com:lihaoyi/PPrint.git"
@@ -34,8 +34,8 @@ lazy val pprint = _root_.sbtcrossproject.CrossPlugin.autoImport
       "com.lihaoyi" %%% "fansi" % "0.2.5",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
       "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
-      "com.lihaoyi" %%% "sourcecode" % "0.1.4",
-      "com.lihaoyi" %%% "utest" % "0.5.3" % Test
+      "com.lihaoyi" %%% "sourcecode" % "0.1.5",
+      "com.lihaoyi" %%% "utest" % "0.6.6" % Test
     ),
 
     unmanagedSourceDirectories in Compile ++= {
