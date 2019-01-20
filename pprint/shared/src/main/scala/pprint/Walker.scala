@@ -47,9 +47,9 @@ abstract class Walker{
       case null => Tree.Literal("null")
       case x: Char =>
         val sb = new StringBuilder
-        sb.append(''')
+        sb.append('\'')
         Util.escapeChar(x, sb)
-        sb.append(''')
+        sb.append('\'')
         Tree.Literal(sb.toString)
       case x: Byte => Tree.Literal(x.toString)
       case x: Short => Tree.Literal(x.toString)
