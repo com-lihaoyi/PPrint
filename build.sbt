@@ -5,7 +5,7 @@ val baseSettings = Seq(
   scalaVersion := "2.11.12",
   testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
   publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"),
-  crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.2"),
+  crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8"),
   scmInfo := Some(ScmInfo(
     browseUrl = url("https://github.com/lihaoyi/PPrint"),
     connection = "scm:git:git@github.com:lihaoyi/PPrint.git"
@@ -96,6 +96,6 @@ lazy val readme = scalatex.ScalatexReadme(
   url = "https://github.com/lihaoyi/pprint/tree/master",
   source = "Readme"
 ).settings(
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.11.12",
   (unmanagedSources in Compile) += baseDirectory.value/".."/"project"/"Constants.scala"
 )
