@@ -125,11 +125,12 @@ object HorizontalTests extends TestSuite{
         'Iterable - Check(Iterable('omg, 'wtf, 'bbq), """List('omg, 'wtf, 'bbq)""")
         'Traversable - Check(Traversable('omg, 'wtf, 'bbq), """List('omg, 'wtf, 'bbq)""")
         'Set - Check(Set('omg), """Set('omg)""")
-        'mutableSet - Check(mutable.Set('omg), """Set('omg)""")
+        'mutableSet - Check(mutable.Set('omg), """Set('omg)""", """HashSet('omg)""")
         'collectionSet - Check(collection.Set('omg), """Set('omg)""")
         'SortedSet - Check(
           imm.SortedSet("1", "2", "3"),
-          """TreeSet("1", "2", "3")"""
+          """TreeSet("1", "2", "3")""",
+          """Set("1", "2", "3")"""
         )
         'Map {
           Check(Map("key" -> "value"), """Map("key" -> "value")""")
@@ -139,12 +140,17 @@ object HorizontalTests extends TestSuite{
         }
 
         'mutableMap {
-          Check(mutable.Map("key" -> "value"), """Map("key" -> "value")""")
+          Check(
+            mutable.Map("key" -> "value"),
+            """Map("key" -> "value")""",
+            """HashMap("key" -> "value")"""
+          )
         }
 
         'SortedMap - Check(
           imm.SortedMap("key" -> "v", "key2" -> "v2"),
-          """Map("key" -> "v", "key2" -> "v2")"""
+          """Map("key" -> "v", "key2" -> "v2")""",
+          """TreeMap("key" -> "v", "key2" -> "v2")"""
         )
       }
 

@@ -61,7 +61,13 @@ object DerivationTests extends TestSuite{
     }
     'varargs {
       import Varargs._
-      Check(Sentence("omg", "2", "3"), """Sentence("omg", WrappedArray("2", "3"))""")
+      Check(
+        Sentence("omg", "2", "3"),
+        """Sentence("omg", WrappedArray("2", "3"))""",
+        """Sentence("omg", ArrayBuffer("2", "3"))""", // 2.10
+        """Sentence("omg", ArraySeq("2", "3"))""", // 2.13
+        """Sentence("omg", WrappedVarArgs("2", "3"))""" // Scala.JS 2.13
+      )
     }
     'genericADTs {
       import GenericADTs._

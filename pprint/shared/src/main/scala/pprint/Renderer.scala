@@ -59,7 +59,7 @@ class Renderer(maxWidth: Int,
 
         }
 
-        buffer += childBuffer
+        buffer += childBuffer.toSeq
       }
 
       def applyHeader = Iterator(colorApplyPrefix(prefix), Renderer.openParen)

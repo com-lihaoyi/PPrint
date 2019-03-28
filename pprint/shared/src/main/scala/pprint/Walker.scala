@@ -47,9 +47,9 @@ abstract class Walker{
       case null => Tree.Literal("null")
       case x: Char =>
         val sb = new StringBuilder
-        sb.append(''')
+        sb.append('\'')
         Util.escapeChar(x, sb)
-        sb.append(''')
+        sb.append('\'')
         Tree.Literal(sb.toString)
       case x: Byte => Tree.Literal(x.toString)
       case x: Short => Tree.Literal(x.toString)
@@ -65,15 +65,27 @@ abstract class Walker{
 
       case x: scala.collection.Map[_, _] =>
         Tree.Apply(
-          x.stringPrefix,
+          // x.stringPrefix protected since 2.13
+          x.empty.toString().takeWhile(_ != '('),
           x.iterator.flatMap { case (k, v) =>
             Seq(Tree.Infix(treeify(k), "->", treeify(v)))
           }
         )
 
-      case x: Iterable[_] => Tree.Apply(x.stringPrefix, x.iterator.map(x => treeify(x)))
+      case x: Iterable[_] => Tree.Apply(
+        // x.stringPrefix protected since 2.13
+        x.companion.empty.toString().takeWhile(_ != '('),
+        x.iterator.map(x => treeify(x))
+      )
 
       case None => Tree.Literal("None")
+
+      case it: Iterator[_] =>
+        // required since 2.13
+        if (it.isEmpty)
+          Tree.Literal("empty iterator")
+        else
+          Tree.Literal("non-empty iterator")
 
       case x: Array[_] => Tree.Apply("Array", x.iterator.map(x => treeify(x)))
 
