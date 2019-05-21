@@ -99,10 +99,10 @@ object TPrintLowPri{
         byName match{
           case Some(t) =>
             c.typecheck(q"null.asInstanceOf[$tpe]")
-            q""" "=> " + pprint.TPrint.implicitly[$t].render($cfgSym) """
+            q""" "=> " + _root_.pprint.TPrint.implicitly[$t].render($cfgSym) """
           case _ =>
             c.typecheck(q"null.asInstanceOf[$tpe]")
-            q""" pprint.TPrint.implicitly[$tpe].render($cfgSym) """
+            q""" _root_.pprint.TPrint.implicitly[$tpe].render($cfgSym) """
         }
 
       }catch{case e: TypecheckException =>
@@ -196,8 +196,8 @@ object TPrintLowPri{
         q"$value.toString"
     }
     lazy val cfgSym = c.freshName[TermName]("cfg")
-    val res = c.Expr[TPrint[T]](q"""pprint.TPrint.lambda{
-      ($cfgSym: pprint.TPrintColors) =>
+    val res = c.Expr[TPrint[T]](q"""_root_.pprint.TPrint.lambda{
+      ($cfgSym: _root_.pprint.TPrintColors) =>
         ${rec0(tpe, end = true)}
     }""")
     //    println("RES " + res)
