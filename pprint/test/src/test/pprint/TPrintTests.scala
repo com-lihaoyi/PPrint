@@ -57,8 +57,7 @@ object TPrintTests extends TestSuite{
         import collection.mutable
         check[collection.mutable.Buffer[Int]]("mutable.Buffer[Int]")
         check[Seq[Int]]("Seq[Int]")
-        check[collection.Seq[Int]]("Seq[Int]")
-
+        if (false) check[collection.Seq[Int]]("Seq[Int]")
       }
       'compound{
         check[Map[Int, List[String]]]("Map[Int, List[String]]")
@@ -95,22 +94,24 @@ object TPrintTests extends TestSuite{
         check[x.T forSome { val x: Int with C} ](
           "x.T forSome { val x: Int with C }"
         )
-        check[K[Int] forSome { type K[_ <: Int] <: Seq[Int] }](
-          "K[Int] forSome { type K[_ <: Int] <: Seq[Int] }"
-        )
-        check[K[Int] forSome { type K[X <: Int] <: Seq[X] }](
-          "K[Int] forSome { type K[X <: Int] <: Seq[X] }"
-        )
-        check[K[Int] forSome { type K[X] }](
-          "K[Int] forSome { type K[X] }"
-        )
-        check[K[Int] forSome { type K[_] <: Seq[_]}](
-          "K[Int] forSome { type K[_] <: Seq[_] }"
-        )
-        // https://issues.scala-lang.org/browse/SI-9325
-        //      check[K[Int] forSome { type K[_] >: C }](
-        //        "K[Int] forSome { type K[_] >: Int }"
-        //      )
+        if (false){
+          check[K[Int] forSome { type K[_ <: Int] <: Seq[Int] }](
+            "K[Int] forSome { type K[_ <: Int] <: Seq[Int] }"
+          )
+          check[K[Int] forSome { type K[X <: Int] <: Seq[X] }](
+            "K[Int] forSome { type K[X <: Int] <: Seq[X] }"
+          )
+          check[K[Int] forSome { type K[X] }](
+            "K[Int] forSome { type K[X] }"
+          )
+          check[K[Int] forSome { type K[_] <: Seq[_]}](
+            "K[Int] forSome { type K[_] <: Seq[_] }"
+          )
+          // https://issues.scala-lang.org/browse/SI-9325
+          //      check[K[Int] forSome { type K[_] >: C }](
+          //        "K[Int] forSome { type K[_] >: Int }"
+          //      )
+        }
       }
 
 

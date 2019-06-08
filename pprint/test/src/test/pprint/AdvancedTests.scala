@@ -146,7 +146,11 @@ object AdvancedTests extends TestSuite{
           val C = new C
           Check(
             SortedMap(List.tabulate(2)(_ -> C):_*),
-            """Map(0 -> C, 1 -> C)"""
+            """Map(0 -> C, 1 -> C)""",
+            """TreeMap(
+              |  0 -> C,
+              |  1 -> C
+              |)""".stripMargin
           )
           val counter = C.counter
           // https://github.com/scala-js/scala-js/issues/2953
@@ -159,6 +163,11 @@ object AdvancedTests extends TestSuite{
           Check(
             SortedMap(List.tabulate(100)(_ -> C):_*),
             """Map(
+              |  0 -> C,
+              |  1 -> C,
+              |  2 -> C,
+              |...""".stripMargin,
+            """TreeMap(
               |  0 -> C,
               |  1 -> C,
               |  2 -> C,

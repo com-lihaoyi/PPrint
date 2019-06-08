@@ -32,7 +32,7 @@ class Renderer(maxWidth: Int,
       // Even before rendering any children, the indentation, prefix
       // and the two open/close parens already take up a few characters
       var totalHorizontalWidth = leftOffset + prefix.length + 2
-      val buffer = collection.mutable.Buffer.empty[Seq[fansi.Str]]
+      val buffer = collection.mutable.Buffer.empty[collection.Seq[fansi.Str]]
       var lastChildIter = Iterator[fansi.Str]()
       var childCompletedLineCount = 0
       while(body.hasNext && totalHorizontalWidth <= maxWidth && childCompletedLineCount == 0){

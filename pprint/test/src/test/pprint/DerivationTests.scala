@@ -61,7 +61,12 @@ object DerivationTests extends TestSuite{
     }
     'varargs {
       import Varargs._
-      Check(Sentence("omg", "2", "3"), """Sentence("omg", WrappedArray("2", "3"))""")
+      Check(
+        Sentence("omg", "2", "3"),
+        """Sentence("omg", WrappedArray("2", "3"))""",
+        """Sentence("omg", ArraySeq("2", "3"))""",
+        """Sentence("omg", WrappedVarArgs("2", "3"))"""
+      )
     }
     'genericADTs {
       import GenericADTs._

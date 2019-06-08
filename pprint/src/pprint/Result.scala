@@ -49,7 +49,7 @@ class Result(val iter: Iterator[fansi.Str],
 
 object Result{
   def fromString(s: => fansi.Str) = {
-    lazy val lines = s.plainText.lines.toArray
+    lazy val lines = s.plainText.linesIterator.toArray
     new Result(Iterator(s), lines.length - 1, lines.last.length)
   }
 }

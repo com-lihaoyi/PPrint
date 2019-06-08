@@ -97,9 +97,9 @@ object HorizontalTests extends TestSuite{
       'collections {
         // Fallback to toString
         'Iterator - {
-          Check(Iterator(), "empty iterator")
-          Check(Iterator(1, 2, 3), "non-empty iterator")
-          Check(Option(Iterator(1, 2, 3)), "Some(non-empty iterator)")
+          Check(Iterator(), "empty iterator", "<iterator>")
+          Check(Iterator(1, 2, 3), "non-empty iterator", "<iterator>")
+          Check(Option(Iterator(1, 2, 3)), "Some(non-empty iterator)", "Some(<iterator>)")
         }
 
         'Iterator - Check(Iterable('1', '2', '3'), "List('1', '2', '3')")
@@ -125,7 +125,7 @@ object HorizontalTests extends TestSuite{
         'Iterable - Check(Iterable('omg, 'wtf, 'bbq), """List('omg, 'wtf, 'bbq)""")
         'Traversable - Check(Traversable('omg, 'wtf, 'bbq), """List('omg, 'wtf, 'bbq)""")
         'Set - Check(Set('omg), """Set('omg)""")
-        'mutableSet - Check(mutable.Set('omg), """Set('omg)""")
+        'mutableSet - Check(mutable.Set('omg), """Set('omg)""", """HashSet('omg)""")
         'collectionSet - Check(collection.Set('omg), """Set('omg)""")
         'SortedSet - Check(
           imm.SortedSet("1", "2", "3"),
@@ -139,12 +139,13 @@ object HorizontalTests extends TestSuite{
         }
 
         'mutableMap {
-          Check(mutable.Map("key" -> "value"), """Map("key" -> "value")""")
+          Check(mutable.Map("key" -> "value"), """Map("key" -> "value")""", """HashMap("key" -> "value")""")
         }
 
         'SortedMap - Check(
           imm.SortedMap("key" -> "v", "key2" -> "v2"),
-          """Map("key" -> "v", "key2" -> "v2")"""
+          """Map("key" -> "v", "key2" -> "v2")""",
+          """TreeMap("key" -> "v", "key2" -> "v2")"""
         )
       }
 
