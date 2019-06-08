@@ -4,7 +4,7 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 trait PPrintModule extends PublishModule {
   def artifactName = "pprint"
 
-  def publishVersion = "0.2.7"
+  def publishVersion = "0.2.8"
 
   def pomSettings = PomSettings(
     description = artifactName(),
