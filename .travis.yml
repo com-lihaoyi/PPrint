@@ -12,19 +12,23 @@ jdk:
   - oraclejdk8
 
 scala:
-  - 2.10.6
-  - 2.11.11
-  - 2.12.2
+  - 2.10.7
+  - 2.11.12
+  - 2.12.8
+  - 2.13.0-M5
 
 matrix:
   include:
-    - scala: 2.10.6
-      jdk: openjdk7
+    - scala: SCALA_NATIVE
+      jdk: oraclejdk8
+      before_install:
+      - curl https://raw.githubusercontent.com/scala-native/scala-native/master/scripts/travis_setup.sh | bash -
+      script:
+      - sbt pprintNative/test
 
 # Taken from https://github.com/typelevel/cats/blob/master/.travis.yml
 cache:
   directories:
-  - $HOME/.sbt/0.13/dependency
   - $HOME/.sbt/boot/scala*
   - $HOME/.sbt/launchers
   - $HOME/.ivy2/cache

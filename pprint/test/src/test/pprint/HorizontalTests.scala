@@ -129,7 +129,8 @@ object HorizontalTests extends TestSuite{
         'collectionSet - Check(collection.Set('omg), """Set('omg)""")
         'SortedSet - Check(
           imm.SortedSet("1", "2", "3"),
-          """TreeSet("1", "2", "3")"""
+          """TreeSet("1", "2", "3")""",
+          """Set("1", "2", "3")"""
         )
         'Map {
           Check(Map("key" -> "value"), """Map("key" -> "value")""")
@@ -139,7 +140,11 @@ object HorizontalTests extends TestSuite{
         }
 
         'mutableMap {
-          Check(mutable.Map("key" -> "value"), """Map("key" -> "value")""", """HashMap("key" -> "value")""")
+          Check(
+            mutable.Map("key" -> "value"),
+            """Map("key" -> "value")""",
+            """HashMap("key" -> "value")"""
+          )
         }
 
         'SortedMap - Check(

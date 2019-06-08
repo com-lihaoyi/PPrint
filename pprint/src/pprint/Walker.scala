@@ -75,6 +75,13 @@ abstract class Walker{
 
       case None => Tree.Literal("None")
 
+      case it: Iterator[_] =>
+        // required since 2.13
+        if (it.isEmpty)
+          Tree.Literal("empty iterator")
+        else
+          Tree.Literal("non-empty iterator")
+
       case x: Array[_] => Tree.Apply("Array", x.iterator.map(x => treeify(x)))
 
       case x: Product =>
