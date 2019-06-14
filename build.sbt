@@ -1,7 +1,4 @@
 
-lazy val pprintJVM = pprint.jvm
-lazy val pprintJS = pprint.js
-lazy val pprintNative = pprint.native
 lazy val readme = scalatex.ScalatexReadme(
   projectId = "readme",
   wd = file(""),

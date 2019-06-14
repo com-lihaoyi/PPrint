@@ -211,7 +211,7 @@
       used for highlighting, as well as passing in @code{additionalHandlers} to
       customize pretty-printing of various types.
 
-    @h1.scala
+    @hl.scala
 
       scala> pprint.pprintln(Math.PI) 
       3.141592653589793
@@ -255,6 +255,11 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.5.5}
+      @ul
+        @li
+          Support for Scala 2.13.0 final
+
     @sect{0.5.3}
       @ul
         @li
