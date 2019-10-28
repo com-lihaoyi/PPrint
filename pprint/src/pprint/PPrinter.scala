@@ -13,7 +13,7 @@ package pprint
   *                           pretty-printed at runtime
   */
 case class PPrinter(defaultWidth: Int = 100,
-                    defaultHeight: Int = 50,
+                    defaultHeight: Int = 500,
                     defaultIndent: Int = 2,
                     colorLiteral: fansi.Attrs = fansi.Color.Green,
                     colorApplyPrefix: fansi.Attrs = fansi.Color.Yellow,
@@ -37,25 +37,18 @@ case class PPrinter(defaultWidth: Int = 100,
           indent: Int = defaultIndent,
           initialOffset: Int = 0)
          (implicit line: sourcecode.Line,
-          enclosing: sourcecode.Enclosing): Unit = {
+          fileName: sourcecode.FileName): Unit = {
 
     def joinSeq[T](seq: Seq[T], sep: T): Seq[T] = {
       seq.flatMap(x => Seq(x, sep)).dropRight(1)
     }
-    val enclosingWithoutAnonfuns =
-      enclosing.value.split(' ').filter(_ != "$anonfun").mkString(" ")
-    val coloredEnclosing = joinSeq(
-      enclosingWithoutAnonfuns.split('.').map( x =>
-        joinSeq(x.split('#').map(fansi.Color.Magenta(_)), fansi.Str("#"))
-      ),
-      Seq(fansi.Str("."))
-    ).flatten
 
     val tagStrs =
       if (tag.isEmpty) Seq()
       else Seq(fansi.Color.Cyan(tag), fansi.Str(" "))
 
-    val prefix = coloredEnclosing ++ Seq(
+    val prefix = Seq(
+      fansi.Color.Magenta(fileName.value),
       fansi.Str(":"),
       fansi.Color.Green(line.value.toString),
       fansi.Str(" "),

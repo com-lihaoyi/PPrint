@@ -255,6 +255,12 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.5.6}
+      @ul
+        @li
+          Make `pprint.log` use `sourcecode.FileName` instead of `sourcecode.Enclosing`
+          to reduce verbosity of logging
+
     @sect{0.5.3}
       @ul
         @li
