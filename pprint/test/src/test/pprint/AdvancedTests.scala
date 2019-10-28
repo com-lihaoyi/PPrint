@@ -19,7 +19,7 @@ object AdvancedTests extends TestSuite{
 
 
   val tests = TestSuite{
-    'applyPrefixWidthExactlyMaxWidth{
+    test("applyPrefixWidthExactlyMaxWidth"){
       case class Foo(is: List[Int])
       val rendered = pprint.apply(
         Foo(List(1)),
@@ -34,7 +34,7 @@ object AdvancedTests extends TestSuite{
 
     }
 
-    'truncatedAttrs{
+    test("truncatedAttrs"){
       def check(input: Iterator[String],
                 width: Int,
                 height: Int,
@@ -82,7 +82,7 @@ object AdvancedTests extends TestSuite{
       )
     }
 
-    'config{
+    test("config"){
       val res1 = pprint.apply(List(1, 2, 3)).plainText
       assert(res1 == "List(1, 2, 3)")
 
@@ -102,10 +102,10 @@ object AdvancedTests extends TestSuite{
       assert(res5 == "List(-1, -2, -3)")
     }
 
-    'Laziness{
+    test("Laziness"){
       val Check = new Check(width = 20, height = 5)
-      'list{
-        'Horizontal {
+      test("list"){
+        test("Horizontal"){
           val C = new C
           Check(
             List.fill(4)(C),
@@ -117,7 +117,7 @@ object AdvancedTests extends TestSuite{
             assert(counter == 4)
           }
         }
-        'Vertical{
+        test("Vertical"){
           val C = new C
           Check(
             List.fill(100)(C),
@@ -141,8 +141,8 @@ object AdvancedTests extends TestSuite{
         }
       }
 
-      'map{
-        'Horizontal{
+      test("map"){
+        test("Horizontal"){
           val Check = new Check(width = 24, height = 5)
           val C = new C
           Check(
@@ -156,7 +156,7 @@ object AdvancedTests extends TestSuite{
             assert(counter == 2)
           }
         }
-        'Vertical{
+        test("Vertical"){
           val C = new C
           Check(
             SortedMap(List.tabulate(100)(_ -> C):_*),

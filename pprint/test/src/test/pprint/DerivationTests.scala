@@ -19,14 +19,14 @@ object DerivationTests extends TestSuite{
   val Check = new Check()
 
   val tests = TestSuite{
-    'singletons {
+    test("singletons"){
       import Singletons._
       Check(Standalone, "Standalone")
       Check(BB, "BB")
       Check(CC, "CC")
       Check(CC: AA, "CC")
     }
-    'adts {
+    test("adts"){
       import ADTs._
       Check(
         ADTb(123, "hello world"),
@@ -40,7 +40,7 @@ object DerivationTests extends TestSuite{
 
       Check(ADT0(), "ADT0()")
     }
-    'sealedHierarchies {
+    test("sealedHierarchies"){
       import DeepHierarchy._
       Check(
         AnQ(1),
@@ -59,7 +59,7 @@ object DerivationTests extends TestSuite{
         "F(AnQ(1))"
       )
     }
-    'varargs {
+    test("varargs"){
       import Varargs._
       Check(
         Sentence("omg", "2", "3"),
@@ -69,7 +69,7 @@ object DerivationTests extends TestSuite{
         """Sentence("omg", WrappedVarArgs("2", "3"))""" // Scala.JS 2.13
       )
     }
-    'genericADTs {
+    test("genericADTs"){
       import GenericADTs._
       Check(DeltaHardcoded.Remove("omg"), """Remove("omg")""")
       Check(
@@ -105,7 +105,7 @@ object DerivationTests extends TestSuite{
     }
 
 
-    'fallback{
+    test("fallback"){
       // make sure we can pprint stuff that looks nothing like a case class
       // by falling back to good old toString
       import Amorphous._
@@ -138,7 +138,7 @@ object DerivationTests extends TestSuite{
       )
 
     }
-    'enums{
+    test("enums"){
       val days1 = pprint.PPrinter.BlackWhite.tokenize(
         java.util.concurrent.TimeUnit.DAYS
       ).mkString
@@ -152,13 +152,13 @@ object DerivationTests extends TestSuite{
         days2 == "SECONDS"
       )
     }
-    'issue92{
+    test("issue92"){
       val r = new Issue92.Rational {
         override def compare(that: Issue92.Rational): Int = ???
       }
       Check(r : Issue92.Rational, r.toString)
     }
-    'test{
+    test("test"){
       Check(
         C2(List(C1("hello", List("world")))),
         """C2(List(C1("hello", List("world"))))"""
