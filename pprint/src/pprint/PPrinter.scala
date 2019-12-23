@@ -30,14 +30,14 @@ case class PPrinter(defaultWidth: Int = 100,
     * message came from. Hard-coded and not very flexible, but you can easily
     * implement your own log method if you want to customize it further.
     */
-  def log(x: sourcecode.Text[Any],
-          tag: String = "",
-          width: Int = defaultWidth,
-          height: Int = defaultHeight,
-          indent: Int = defaultIndent,
-          initialOffset: Int = 0)
-         (implicit line: sourcecode.Line,
-          fileName: sourcecode.FileName): Unit = {
+  def log[T](x: sourcecode.Text[T],
+             tag: String = "",
+             width: Int = defaultWidth,
+             height: Int = defaultHeight,
+             indent: Int = defaultIndent,
+             initialOffset: Int = 0)
+            (implicit line: sourcecode.Line,
+             fileName: sourcecode.FileName): T = {
 
     def joinSeq[T](seq: Seq[T], sep: T): Seq[T] = {
       seq.flatMap(x => Seq(x, sep)).dropRight(1)
@@ -58,6 +58,7 @@ case class PPrinter(defaultWidth: Int = 100,
     val str = fansi.Str.join(prefix ++ tokenize(x.value, width, height, indent).toSeq:_*)
 
     println(str)
+    x.value
   }
 
   /**
@@ -74,13 +75,14 @@ case class PPrinter(defaultWidth: Int = 100,
   /**
     * Converts an [[Any]] into a large colored `fansi.Str`
     */
-  def pprintln(x: Any,
-              width: Int = defaultWidth,
-              height: Int = defaultHeight,
-              indent: Int = defaultIndent,
-              initialOffset: Int = 0): Unit = {
+  def pprintln[T](x: T,
+                  width: Int = defaultWidth,
+                  height: Int = defaultHeight,
+                 indent: Int = defaultIndent,
+                 initialOffset: Int = 0): Unit = {
     tokenize(x, width, height, indent, initialOffset).foreach(print)
     println()
+    x
   }
 
   /**
