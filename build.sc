@@ -4,7 +4,7 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 trait PPrintModule extends PublishModule {
   def artifactName = "pprint"
 
-  def publishVersion = "0.5.7"
+  def publishVersion = "0.5.8"
 
   def pomSettings = PomSettings(
     description = artifactName(),
@@ -23,8 +23,8 @@ trait PPrintModule extends PublishModule {
 trait PPrintMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::fansi::0.2.7",
-    ivy"com.lihaoyi::sourcecode::0.1.8"
+    ivy"com.lihaoyi::fansi::0.2.8",
+    ivy"com.lihaoyi::sourcecode::0.2.0"
   )
   def compileIvyDeps = Agg(
     ivy"org.scala-lang:scala-reflect:${scalaVersion()}",
@@ -79,7 +79,7 @@ trait PPrintMainModule extends CrossScalaModule {
 trait PPrintTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.1")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.3")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
@@ -106,8 +106,8 @@ object pprint extends Module {
   }
 
   object js extends Cross[JsPPrintModule](
-    ("2.12.8", "0.6.28"),
-    ("2.13.0", "0.6.28")/*, ("2.12.8", "1.0.0-M8"), ("2.13.0", "1.0.0-M8")*/
+    ("2.12.8", "0.6.31"), ("2.13.0", "0.6.31"), 
+    ("2.12.8", "1.0.0-RC2"), ("2.13.0", "1.0.0-RC2")
   )
   class JsPPrintModule(val crossScalaVersion: String, crossJSVersion: String)
     extends PPrintMainModule with ScalaJSModule with PPrintModule {
