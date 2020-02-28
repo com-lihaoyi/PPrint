@@ -173,6 +173,13 @@ case class Result2(name : String,
 
 case class GeoCoding2(results : List[Result2], status: String)
 
+object Issue28{
+  class MyProduct2 extends Product2[String, Int] {
+    override def _1: String = "asdf"
+    override def _2: Int = 333
+    override def canEqual(that: Any): Boolean = false
+  }
+}
 object Issue94{
   class Foo(val x: String){
     override def toString = x

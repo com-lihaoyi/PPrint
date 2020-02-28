@@ -47,13 +47,13 @@ object Util{
   }
 
   def isOperator(ident: String) = {
-    ident(0) match{
+    (ident.size > 0) && (ident(0) match{
       case '<' | '~' | '!' | '@' | '#' | '%' |
            '^' | '*' | '+' | '-' | /*'<' | */
            '>' | '?' | ':' | '=' | '&' |
            '|' | '/' | '\\' => true
       case _ => false
-    }
+    })
   }
   def escapeChar(c: Char,
                  sb: StringBuilder,
