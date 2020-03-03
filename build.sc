@@ -118,4 +118,17 @@ object pprint extends Module {
       val crossScalaVersion = JsPPrintModule.this.crossScalaVersion
     }
   }
+
+  object native extends Cross[NativePPrintModule](
+    ("2.11.12", "0.3.9"), ("2.11.12", "0.4.0-M2")
+  )
+  class NativePPrintModule(val crossScalaVersion: String, crossScalaNativeVersion: String)
+    extends PPrintMainModule with ScalaNativeModule with PPrintModule {
+    def offset = os.up
+    def scalaNativeVersion = crossScalaNativeVersion
+    object test extends Tests with PPrintTestModule{
+      def offset = os.up
+      val crossScalaVersion = NativePPrintModule.this.crossScalaVersion
+    }
+  }
 }
