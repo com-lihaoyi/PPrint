@@ -3,25 +3,30 @@ package pprint
 import pprint.TPrint
 import utest._
 
+
 object TPrintTests extends TestSuite{
 
   class M
 
   val tests = TestSuite{
     //
-    type X = scala.Int with scala.Predef.String{}
+    type X = scala.Int with scala.Predef.String
     val x = ""
     test("plain"){
       def checkVal[T](expected: String, expr: => T)(implicit tprint: TPrint[T]) = {
-        check[T](expected)(tprint)
+        check[T](expected)(using tprint)
       }
 
       def check[T](expected: String*)(implicit tprint: TPrint[T]) = {
         val tprinted = tprint.render
         assert(expected.contains(tprinted))
       }
+
       test("simple"){
-        // check[X]("X")
+
+        //TPrint.default[X]
+
+        //check[X]("X")
         check[String]("String")
         check[java.lang.String]("String")
         check[Int]("Int")
@@ -31,19 +36,19 @@ object TPrintTests extends TestSuite{
         t
       }
 
-      // test("nothing"){
-      //   check[Nothing]("Nothing")
-      //   // Inferred nothings behave weirdly, make sure it works!
-      //   check("Nothing")
-      //   checkVal("Nothing", throw new Exception())
-      //   checkVal("Some[Nothing]", Some(???))
-      // }
+      test("nothing"){
+        check[Nothing]("Nothing")
+        // Inferred nothings behave weirdly, make sure it works!
+        check("Nothing")
+        checkVal("Nothing", throw new Exception())
+        checkVal("Some[Nothing]", Some(???))
+      }
 
-      // test("singleton"){
+      test("singleton"){
       //   check[x.type]("x.type")
-      //   check[TPrintTests.this.M]("M")
+         check[TPrintTests.this.M]("M")
       //   check[TPrintTests.type]("TPrintTests.type")
-      // }
+      }
 
       // test("java"){
       //   check[java.util.Set[_]]("java.util.Set[_]")
@@ -51,29 +56,29 @@ object TPrintTests extends TestSuite{
       //   check[java.util.Set[String]]("java.util.Set[String]")
       // }
 
-  //     test("mutable"){
+      test("mutable"){
 
-  //       check[collection.mutable.Buffer[Int]]("collection.mutable.Buffer[Int]")
-  //       import collection.mutable
-  //       check[collection.mutable.Buffer[Int]]("mutable.Buffer[Int]")
-  //       check[Seq[Int]]("Seq[Int]")
+     //   check[collection.mutable.Buffer[Int]]("collection.mutable.Buffer[Int]")
+        import collection.mutable
+   //     check[collection.mutable.Buffer[Int]]("mutable.Buffer[Int]")
+        check[Seq[Int]]("Seq[Int]")
 
-  //       // can't use scala.util.Properties on Scala.JS
-  //       val is213Plus = classOf[Seq[Int]].getName != "scala.collection.Seq"
-  //       check[collection.Seq[Int]](if (is213Plus) "collection.Seq[Int]" else "Seq[Int]")
-  //       check[collection.immutable.Seq[Int]](if (is213Plus) "Seq[Int]" else "collection.immutable.Seq[Int]")
+        // can't use scala.util.Properties on Scala.JS
+        //val is213Plus = classOf[Seq[Int]].getName != "scala.collection.Seq"
+       // check[collection.Seq[Int]](if (is213Plus) "collection.Seq[Int]" else "Seq[Int]")
+       // check[collection.immutable.Seq[Int]](if (is213Plus) "Seq[Int]" else "collection.immutable.Seq[Int]")
 
-  //     }
-  //     test("compound"){
-  //       check[Map[Int, List[String]]]("Map[Int, List[String]]")
-  //       check[Int => String]("Int => String")
-  //       check[(Int, Float) => String]("(Int, Float) => String")
-  //       check[(Int, Float, Double, Char, Byte, Short, Long) => String](
-  //         "(Int, Float, Double, Char, Byte, Short, Long) => String"
-  //       )
-  //       check[(Int, Float) => (String, String)]("(Int, Float) => (String, String)")
-  //       check[(Int, String)]("(Int, String)")
-  //       check[(Int, String, (Int, String), Double)]("(Int, String, (Int, String), Double)")
+      }
+       test("compound"){
+         check[Map[Int, List[String]]]("Map[Int, List[String]]")
+         check[Int => String]("Int => String")
+         check[(Int, Float) => String]("(Int, Float) => String")
+         check[(Int, Float, Double, Char, Byte, Short, Long) => String](
+           "(Int, Float, Double, Char, Byte, Short, Long) => String"
+         )
+         check[(Int, Float) => (String, String)]("(Int, Float) => (String, String)")
+         check[(Int, String)]("(Int, String)")
+         check[(Int, String, (Int, String), Double)]("(Int, String, (Int, String), Double)")
   //       check[Int {val x: Int}]("Int{val x: Int}")
   //       check[Int with String]("Int with String")
   //     }
@@ -119,7 +124,7 @@ object TPrintTests extends TestSuite{
   //       //      check[K[Int] forSome { type K[_] >: C }](
   //       //        "K[Int] forSome { type K[_] >: Int }"
   //       //      )
-  //     }
+       }
 
 
   //     test("typeMember"){

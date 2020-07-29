@@ -98,7 +98,7 @@ trait PPrintTestModule extends ScalaModule with TestModule {
 
 object pprint extends Module {
 
-  object jvm extends Cross[JvmPPrintModule]("2.12.8", "2.13.0", "0.24.0-RC1")
+  object jvm extends Cross[JvmPPrintModule]("2.12.8", "2.13.1", "0.24.0-RC1")
 
   class JvmPPrintModule(val crossScalaVersion: String)
     extends PPrintMainModule with ScalaModule with PPrintModule {

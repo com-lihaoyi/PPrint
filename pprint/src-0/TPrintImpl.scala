@@ -3,7 +3,7 @@ import language.experimental.macros
 import scala.reflect.macros.TypecheckException
 
 trait TPrintLowPri{
-  implicit inline def default[T]: TPrint[T] = ${ TPrintLowPri.typePrintImpl[T] }
+  inline given default[T] as TPrint[T] = ${ TPrintLowPri.typePrintImpl[T] }
 }
 
 object TPrintLowPri{
@@ -29,9 +29,46 @@ object TPrintLowPri{
       literalColor(cfg, '{ fansi.Str($expr) })
     }
 
-    def rec0(cfg: Expr[TPrintColors])(tpe: TypeTree, end: Boolean = false): Expr[String] = tpe.tpe match {
+    def prefixFor(cfg: Expr[TPrintColors])(pre: TypeTree, sym: String): Expr[String] = {
+      // Depending on what the prefix is, you may use `#`, `.`
+      // or even need to wrap the prefix in parentheses
+      val sep = pre match {
+        case x if x.toString.endsWith(".type") =>
+          '{ ${rec0(cfg)(pre.tpe)} + "." }
+        // case x: TypeRef => q""" ${literalColor(implicitRec(pre))} + "#" """
+        // case x: SingleType => q""" ${literalColor(rec0(pre))} + "." """
+        // case x: ThisType => q""" ${literalColor(rec0(pre))} + "." """
+        // case x => q""" "(" + ${implicitRec(pre)} + ")#" """
+      }
+
+      // val prefix = if (!lookup(sym)) sep else q"$s"
+      '{ $sep + ${ printSym(cfg, sym) } }
+    }
+
+
+    def printArgs(cfg: Expr[TPrintColors])(args: List[TypeOrBounds]): Expr[String] = {
+      val added = args.map {
+        case tpe: Type =>
+          rec0(cfg)(tpe, false)
+        case _ => ???
+      }.reduceLeft { (l, r) =>
+        '{ $l  + ", " + $r }
+      }
+      '{ "[" + $ { added } + "]" }
+      //if (args == Nil) q"$s" else q""" "[" + $added + "]" """
+    }
+
+    def rec0(cfg: Expr[TPrintColors])(tpe: Type, end: Boolean = false): Expr[String] = tpe match {
+      case TypeRef(NoPrefix(), sym) =>
+        printSym(cfg, sym)
       case TypeRef(_, sym) =>
         printSym(cfg, sym)
+      case AppliedType(tpe, args) =>
+        '{ ${ printSym(cfg, tpe.typeSymbol.name) } + ${ printArgs(cfg)(args) } }
+      case unknown =>
+        qctx.error(unknown.showExtractors)
+        // '{???}
+        Literal(Constant(t.unseal.showExtractors)).seal.cast[String]
 
       // case TypeBounds(lo, hi) =>
       //   val res = printBounds(lo, hi)
@@ -76,8 +113,11 @@ object TPrintLowPri{
 //     //    println("RES " + res)
 //     res
     }
-
-    '{ TPrint.lambda((c: TPrintColors) => ${ rec0('c)(t.unseal) }) }
+    '{
+      new TPrint[T] {
+        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(t.unseal.tpe) }
+      }
+    }
   }
 }
 
