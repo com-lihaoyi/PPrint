@@ -2,11 +2,9 @@ package pprint
 
 object ProductSupport {
 
-  def treeifyProductElements(
-    x: Product,
-    walker: Walker
-  ): Iterator[Tree] = {
-    x.productElementNames
+  def treeifyProductElements(x: Product, walker: Walker): Iterator[Tree] = {
+    if (!walker.showFieldNames) x.productIterator.map(x => walker.treeify(x))
+    else x.productElementNames
       .zipWithIndex
       .map {
         case (name, i) =>
