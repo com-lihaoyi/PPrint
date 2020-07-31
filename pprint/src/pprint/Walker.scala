@@ -26,6 +26,11 @@ object Tree{
   }
 
   /**
+    * x = y
+    */
+  case class KeyValue(key: String, value: Tree) extends Tree
+
+  /**
     * xyz
     */
   case class Lazy(body0: Ctx => Iterator[String]) extends Tree
@@ -102,7 +107,7 @@ abstract class Walker{
             Tree.Apply("", x.productIterator.map(x => treeify(x)))
 
           case _ =>
-            Tree.Apply(x.productPrefix, x.productIterator.map(x => treeify(x)))
+            Tree.Apply(x.productPrefix, ProductSupport.treeifyProductElements(x, this))
         }
 
       case x => Tree.Lazy(ctx => Iterator(x.toString))

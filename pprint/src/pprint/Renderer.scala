@@ -135,6 +135,10 @@ class Renderer(maxWidth: Int,
 
     case t: Tree.Literal => Result.fromString(colorLiteral(t.body))
 
+    case Tree.KeyValue(k, v) =>
+      Result.fromString(s"$k = ")
+        .flatMap((_, _) => rec(v, leftOffset, indentCount))
+
   }
 }
 
