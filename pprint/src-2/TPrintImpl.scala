@@ -44,7 +44,7 @@ object TPrintLowPri{
       }
 
       if (!s.isType) {
-        // Try to de-reference `val` references
+       // Try to de-reference `val` references
         lookedUps.exists(x =>
           x == s || x.tpe.termSymbol == s.asTerm
         )
