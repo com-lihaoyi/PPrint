@@ -16,7 +16,7 @@ object Customs{
 }
 object DerivationTests extends TestSuite{
 
-  val Check = new Check()
+  val Check = new Check(100, 99999, false, false)
 
   val tests = TestSuite{
     test("singletons"){

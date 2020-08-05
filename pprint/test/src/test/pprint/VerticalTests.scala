@@ -12,9 +12,9 @@ object VerticalTests extends TestSuite{
 
     test("Vertical"){
 
-      val Check = new Check(width = 25, renderTwice = true)
+      val Check = new Check(width = 25, height = 99999, renderTwice = true, fields = false)
       test("singleNested"){
-        test - new Check(width = 5)(
+        test - new Check(width = 5, height = 99999, renderTwice = false, fields = false)(
           List(1, 2, 3),
           """List(
             |  1,
