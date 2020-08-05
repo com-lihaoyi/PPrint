@@ -85,15 +85,15 @@ object TPrintLowPri{
         val pre = rec0(cfg)(tpe)
         lazy val defs = refinements.collect {
           case (name, tpe: Type) =>
-            '{ "type " + ${ Literal(Constant(name)).seal } + " = " + ${ rec0(cfg)(tpe) } }
+            '{ "type " + ${ Expr(name) } + " = " + ${ rec0(cfg)(tpe) } }
           case (name, tpe: Type) =>
-            '{ "type " + ${ Literal(Constant(name)).seal } + " = " + ${ rec0(cfg)(tpe) } }
+            '{ "type " + ${ Expr(name) } + " = " + ${ rec0(cfg)(tpe) } }
         }.reduceLeft { (l, r) =>
           '{ $l + "; " + $r }
         }
         '{ $pre + ${ if(refinements.isEmpty) '{ "" } else '{ "{" + $defs + "}" } } }
       case _ =>
-        Literal(Constant(t.show)).seal.cast[String]
+        Expr(t.show)
     }
     '{
       new TPrint[T] {
@@ -102,4 +102,3 @@ object TPrintLowPri{
     }
   }
 }
-
