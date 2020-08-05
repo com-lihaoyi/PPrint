@@ -26,6 +26,11 @@ object Tree{
   }
 
   /**
+    * x = y
+    */
+  case class KeyValue(key: String, value: Tree) extends Tree
+
+  /**
     * xyz
     */
   case class Lazy(body0: Ctx => Iterator[String]) extends Tree
@@ -40,6 +45,7 @@ object Tree{
 
 abstract class Walker{
   val tuplePrefix = "scala.Tuple"
+  def showFieldNames = true
   def additionalHandlers: PartialFunction[Any, Tree]
   def treeify(x: Any): Tree = additionalHandlers.lift(x).getOrElse{
     x match{
@@ -102,7 +108,7 @@ abstract class Walker{
             Tree.Apply("", x.productIterator.map(x => treeify(x)))
 
           case _ =>
-            Tree.Apply(x.productPrefix, x.productIterator.map(x => treeify(x)))
+            Tree.Apply(x.productPrefix, ProductSupport.treeifyProductElements(x, this))
         }
 
       case x => Tree.Lazy(ctx => Iterator(x.toString))

@@ -255,6 +255,11 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.6.0}
+      @ul
+        @li
+          Add support for field names when printing case classes in Scala 2.13
+
     @sect{0.5.6}
       @ul
         @li

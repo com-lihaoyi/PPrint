@@ -26,6 +26,7 @@ class Renderer(maxWidth: Int,
 
   def rec(x: Tree, leftOffset: Int, indentCount: Int): Result = x match{
     case Tree.Apply(prefix, body) =>
+      val nonEmpty = body.hasNext
       // Render children and buffer them until you fill up a single line,
       // or you run out of children.
       //
@@ -84,6 +85,18 @@ class Renderer(maxWidth: Int,
 
         val length: Int = buffer.iterator.map(_.iterator.map(_.length).sum).sum
         new Result(iter, 0, length)
+      }else if (!nonEmpty && totalHorizontalWidth > maxWidth) {
+        val iter = Util.concat(
+          () => applyHeader,
+          () => Iterator(
+            Renderer.newLine,
+            Renderer.indent(indentCount * indentStep),
+            Renderer.closeParen
+          )
+        )
+
+        val length: Int = buffer.iterator.map(_.iterator.map(_.length).sum).sum
+        new Result(iter, 0, length)
       } else {
         def bufferedFragments = Renderer.joinIter(
           for((v, i) <- buffer.iterator.zipWithIndex) yield{
@@ -134,6 +147,11 @@ class Renderer(maxWidth: Int,
       new Truncated(str.map(fansi.Str(_)), maxWidth, height = 99999999).toResult
 
     case t: Tree.Literal => Result.fromString(colorLiteral(t.body))
+
+    case Tree.KeyValue(k, v) =>
+      val prefix = s"$k = "
+      Result.fromString(prefix)
+        .flatMap((_, _) => rec(v, leftOffset + prefix.length, indentCount))
 
   }
 }
