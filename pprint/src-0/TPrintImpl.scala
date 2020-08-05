@@ -12,6 +12,22 @@ object TPrintLowPri{
   import scala.quoted._
   import sourcecode.Text.generate
 
+
+  extension (expr: Expr[String]) {
+    def +(other: Expr[String])(using QuoteContext): Expr[String] =
+      '{ $expr + $other }
+  }
+
+  extension (exprs: List[Expr[String]]) {
+    def mkStringExpr(sep: String)(using QuoteContext): Expr[String] =
+      exprs match {
+        case expr :: Nil =>
+          expr
+        case _ =>
+          exprs.reduceLeft { (l, r) => l + Expr(sep) + r }
+      }
+  }
+
   def typePrintImpl[T](using qctx: QuoteContext, t: Type[T]): Expr[TPrint[T]] = {
 
     import qctx.tasty._
@@ -27,10 +43,11 @@ object TPrintLowPri{
 
     def printBounds(cfg: Expr[TPrintColors])(lo: Type, hi: Type) = {
       val loTree =
-        if (lo =:= typeOf[Nothing]) None else Some('{ " >: " + ${ rec0(cfg)(lo) }})
+        if (lo =:= typeOf[Nothing]) None else Some(Expr(" >: ") + rec0(cfg)(lo) )
       val hiTree =
-        if (hi =:= typeOf[Any]) None else Some('{ " <: " + ${ rec0(cfg)(hi) }})
-      loTree.orElse(hiTree).map((expr) => '{ "_" + $expr }).getOrElse('{ "_" })
+        if (hi =:= typeOf[Any]) None else Some(Expr(" <: ") + rec0(cfg)(hi) )
+      val underscore = Expr("_")
+      loTree.orElse(hiTree).map(underscore + _).getOrElse(underscore)
     }
 
     def printSym(cfg: Expr[TPrintColors], s: String): Expr[String] = {
@@ -44,9 +61,9 @@ object TPrintLowPri{
       // or even need to wrap the prefix in parentheses
       val sep = pre match {
         case x if x.toString.endsWith(".type") =>
-          '{ ${rec0(cfg)(pre.tpe)} + "." }
+          rec0(cfg)(pre.tpe) + Expr(".")
       }
-      '{ $sep + ${ printSym(cfg, sym) } }
+      sep + printSym(cfg, sym)
     }
 
 
@@ -56,10 +73,8 @@ object TPrintLowPri{
           rec0(cfg)(tpe, false)
         case TypeBounds(lo, hi) =>
           printBounds(cfg)(lo, hi)
-      }.reduceLeft { (l, r) =>
-        '{ $l  + ", " + $r }
-      }
-      '{ "[" + $ { added } + "]" }
+      }.mkStringExpr(", ")
+      Expr("[") + added + Expr("]")
     }
 
 
@@ -80,18 +95,16 @@ object TPrintLowPri{
       case TypeRef(_, sym) =>
         printSym(cfg, sym)
       case AppliedType(tpe, args) =>
-        '{ ${ printSym(cfg, tpe.typeSymbol.name) } + ${ printArgs(cfg)(args) } }
+        printSym(cfg, tpe.typeSymbol.name) + printArgs(cfg)(args)
       case RefinedType(tpe, refinements) =>
         val pre = rec0(cfg)(tpe)
         lazy val defs = refinements.collect {
           case (name, tpe: Type) =>
-            '{ "type " + ${ Expr(name) } + " = " + ${ rec0(cfg)(tpe) } }
-          case (name, tpe: Type) =>
-            '{ "type " + ${ Expr(name) } + " = " + ${ rec0(cfg)(tpe) } }
-        }.reduceLeft { (l, r) =>
-          '{ $l + "; " + $r }
-        }
-        '{ $pre + ${ if(refinements.isEmpty) '{ "" } else '{ "{" + $defs + "}" } } }
+            Expr("type " + name + " = ") + rec0(cfg)(tpe)
+          case (name, TypeBounds(lo, hi)) =>
+            Expr("type " + name) + printBounds(cfg)(lo, hi) + rec0(cfg)(tpe)
+        }.mkStringExpr("; ")
+        pre + (if(refinements.isEmpty) '{ "" } else Expr("{") + defs + Expr("}"))
       case _ =>
         Expr(t.show)
     }
