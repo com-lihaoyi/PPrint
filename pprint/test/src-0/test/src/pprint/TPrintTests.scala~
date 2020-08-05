@@ -14,7 +14,7 @@ object TPrintTests extends TestSuite{
     val x = ""
     test("plain"){
       def checkVal[T](expected: String, expr: => T)(implicit tprint: TPrint[T]) = {
-        check[T](expected)(tprint)
+        check[T](expected)(using tprint)
       }
 
       def check[T](expected: String*)(implicit tprint: TPrint[T]) = {
