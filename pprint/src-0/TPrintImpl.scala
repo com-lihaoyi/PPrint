@@ -34,7 +34,7 @@ object TPrintLowPri{
     }
 
     def printSym(cfg: Expr[TPrintColors], s: String): Expr[String] = {
-      val expr = Literal(Constant(s)).seal.cast[String]
+      val expr = Expr(s)
       literalColor(cfg, '{ fansi.Str($expr) })
     }
 
