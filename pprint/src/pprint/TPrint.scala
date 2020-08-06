@@ -28,9 +28,9 @@ object TPrint extends TPrintGen[TPrint, TPrintColors] with TPrintLowPri{
 
 case class TPrintColors(typeColor: fansi.Attrs)
 
-object TPrintColors{
+object TPrintColors {
   implicit object BlackWhite extends TPrintColors(fansi.Attrs())
   object Colors extends TPrintColors(fansi.Color.Green){
-    implicit val Colored = this
+    implicit val Colored: TPrintColors = this
   }
 }

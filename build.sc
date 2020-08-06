@@ -27,8 +27,8 @@ trait PPrintMainModule extends CrossScalaModule {
     ivy"com.lihaoyi::sourcecode::0.2.1"
   )
   def compileIvyDeps = Agg(
-    ivy"org.scala-lang:scala-reflect:${scalaVersion()}",
-    ivy"org.scala-lang:scala-compiler:${scalaVersion()}"
+    ivy"${scalaOrganization()}:scala-reflect:${scalaVersion()}",
+    ivy"${scalaOrganization()}:scala-compiler:${scalaVersion()}"
   )
   def offset: os.RelPath = os.rel
   def sources = T.sources(
@@ -49,10 +49,10 @@ trait PPrintMainModule extends CrossScalaModule {
       val tsBounded = (1 to i).map("T" + _ + ": Type").mkString(", ")
       val tsGet = (1 to i).map("get[T" + _ + "](cfg)").mkString(" + \", \" + ")
       s"""
-          implicit def F${i}TPrint[$tsBounded, R: Type] = make[($ts) => R](cfg =>
+          implicit def F${i}TPrint[$tsBounded, R: Type]: Type[($ts) => R] = make[($ts) => R](cfg =>
             "(" + $tsGet + ") => " + get[R](cfg)
           )
-          implicit def T${i}TPrint[$tsBounded] = make[($ts)](cfg =>
+          implicit def T${i}TPrint[$tsBounded]: Type[($ts)] = make[($ts)](cfg =>
             "(" + $tsGet + ")"
           )
         """
@@ -62,8 +62,8 @@ trait PPrintMainModule extends CrossScalaModule {
         trait TPrintGen[Type[_], Cfg]{
           def make[T](f: Cfg => String): Type[T]
           def get[T: Type](cfg: Cfg): String
-          implicit def F0TPrint[R: Type] = make[() => R](cfg => "() => " + get[R](cfg))
-          implicit def F1TPrint[T1: Type, R: Type] = {
+          implicit def F0TPrint[R: Type]: Type[() => R] = make[() => R](cfg => "() => " + get[R](cfg))
+          implicit def F1TPrint[T1: Type, R: Type]: Type[T1 => R] = {
             make[T1 => R](cfg => get[T1](cfg) + " => " + get[R](cfg))
           }
           ${typeGen.mkString("\n")}
@@ -97,16 +97,28 @@ trait PPrintTestModule extends ScalaModule with TestModule {
 }
 
 object pprint extends Module {
-  object jvm extends Cross[JvmPPrintModule]("2.12.8", "2.13.0")
+
+  val dottyVersion = Option(sys.props("dottyVersion"))
+  object jvm extends Cross[JvmPPrintModule]((List("2.12.8", "2.13.1", "0.26.0-RC1") ++ dottyVersion): _*)
+
   class JvmPPrintModule(val crossScalaVersion: String)
     extends PPrintMainModule with ScalaModule with PPrintModule {
     object test extends Tests with PPrintTestModule{
       val crossScalaVersion = JvmPPrintModule.this.crossScalaVersion
     }
+
+    override def docJar =
+      if (crossScalaVersion.startsWith("2")) super.docJar
+      else T {
+	val outDir = T.ctx().dest
+	val javadocDir = outDir / 'javadoc
+	os.makeDir.all(javadocDir)
+	mill.api.Result.Success(mill.modules.Jvm.createJar(Agg(javadocDir))(outDir))
+      }
   }
 
   object js extends Cross[JsPPrintModule](
-    ("2.12.8", "0.6.31"), ("2.13.0", "0.6.31"), 
+    ("2.12.8", "0.6.31"), ("2.13.0", "0.6.31"),
     ("2.12.8", "1.0.0"), ("2.13.0", "1.0.0")
   )
   class JsPPrintModule(val crossScalaVersion: String, crossJSVersion: String)
@@ -131,4 +143,5 @@ object pprint extends Module {
       val crossScalaVersion = NativePPrintModule.this.crossScalaVersion
     }
   }
+
 }
