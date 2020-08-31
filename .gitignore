@@ -7,6 +7,7 @@ target/
 .project
 .cache
 .sbtserver
+.metals
 project/.sbtserver
 tags
 nohup.out

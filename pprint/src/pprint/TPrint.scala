@@ -21,7 +21,7 @@ object TPrint extends TPrintGen[TPrint, TPrintColors] with TPrintLowPri{
     def render(implicit cfg: TPrintColors) = f(cfg)
   }
   def make[T](f: TPrintColors => String) = TPrint.lambda[T](f)
-  def get[T](cfg: TPrintColors)(implicit t: TPrint[T]) = t.render(cfg)
+  def get[T](cfg: TPrintColors)(implicit t: TPrint[T], wrap: TWrap[T]) = wrap.getWrapped(t.render(cfg))
   def implicitly[T](implicit t: TPrint[T]): TPrint[T] = t
   implicit val NothingTPrint: TPrint[Nothing] = TPrint.literal("Nothing")
 }

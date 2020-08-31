@@ -46,7 +46,7 @@ trait PPrintMainModule extends CrossScalaModule {
 
     val typeGen = for(i <- 2 to 22) yield {
       val ts = (1 to i).map("T" + _).mkString(", ")
-      val tsBounded = (1 to i).map("T" + _ + ": Type").mkString(", ")
+      val tsBounded = (1 to i).map("T" + _ + ": Type: TWrap").mkString(", ")
       val tsGet = (1 to i).map("get[T" + _ + "](cfg)").mkString(" + \", \" + ")
       s"""
           implicit def F${i}TPrint[$tsBounded, R: Type]: Type[($ts) => R] = make[($ts) => R](cfg =>
@@ -57,13 +57,38 @@ trait PPrintMainModule extends CrossScalaModule {
           )
         """
     }
+
+    val twrapOutput = s"""
+        case class TWrap[T](shouldWrap: Boolean) {
+          def getWrapped(s: String) = if (shouldWrap) s"($$s)" else s
+        }
+        trait TWrapLowerPriorityImplicits {
+          implicit def nonFunctionsAreNotWrapped[T]: TWrap[T] = new TWrap[T](false)
+        }
+        object TWrap extends TWrapLowerPriorityImplicits {
+          private type L = Nothing
+          private type U = Any
+          implicit def functions0AreWrapped[T](implicit ev: T <:< Function0[U]): TWrap[T] = new TWrap[T](true)
+          ${
+            1.to(22)
+              .map(i => s"""
+          implicit def functions${i}AreWrapped[T](implicit ev: T <:< Function$i[${1.to(i).map(_ => "L").mkString(",")}, U]): TWrap[T] = new TWrap[T](true)"""
+              )
+              .mkString
+          }
+        }
+    """
+
     val output = s"""
         package pprint
+
+        $twrapOutput
+
         trait TPrintGen[Type[_], Cfg]{
           def make[T](f: Cfg => String): Type[T]
-          def get[T: Type](cfg: Cfg): String
+          def get[T: Type: TWrap](cfg: Cfg): String
           implicit def F0TPrint[R: Type]: Type[() => R] = make[() => R](cfg => "() => " + get[R](cfg))
-          implicit def F1TPrint[T1: Type, R: Type]: Type[T1 => R] = {
+          implicit def F1TPrint[T1: Type: TWrap, R: Type]: Type[T1 => R] = {
             make[T1 => R](cfg => get[T1](cfg) + " => " + get[R](cfg))
           }
           ${typeGen.mkString("\n")}
