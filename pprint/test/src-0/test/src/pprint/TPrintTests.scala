@@ -29,6 +29,10 @@ object TPrintTests extends TestSuite{
         check[java.lang.String]("String")
         check[Int]("Int")
 
+
+        val a = List(1,2,3).tail
+        checkVal("List[Int]", a)
+
         check[scala.Int]("Int")
         def t[T] = check[T]("T")
         t
