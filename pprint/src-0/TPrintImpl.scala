@@ -105,7 +105,9 @@ object TPrintLowPri{
             Expr("type " + name) + printBounds(cfg)(lo, hi) + rec0(cfg)(tpe)
         }.mkStringExpr("; ")
         pre + (if(refinements.isEmpty) '{ "" } else Expr("{") + defs + Expr("}"))
-      case _ =>
+      case AnnotatedType(parent, annot) =>
+        rec0(cfg)(parent, end)
+      case _=>
         Expr(t.show)
     }
     '{
