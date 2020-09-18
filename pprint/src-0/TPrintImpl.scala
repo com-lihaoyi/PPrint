@@ -43,9 +43,9 @@ object TPrintLowPri{
 
     def printBounds(cfg: Expr[TPrintColors])(lo: Type, hi: Type) = {
       val loTree =
-        if (lo =:= typeOf[Nothing]) None else Some(Expr(" >: ") + rec0(cfg)(lo) )
+        if (lo =:= Type.of[Nothing]) None else Some(Expr(" >: ") + rec0(cfg)(lo) )
       val hiTree =
-        if (hi =:= typeOf[Any]) None else Some(Expr(" <: ") + rec0(cfg)(hi) )
+        if (hi =:= Type.of[Any]) None else Some(Expr(" <: ") + rec0(cfg)(hi) )
       val underscore = Expr("_")
       loTree.orElse(hiTree).map(underscore + _).getOrElse(underscore)
     }
@@ -67,19 +67,19 @@ object TPrintLowPri{
     }
 
 
-    def printArgs(cfg: Expr[TPrintColors])(args: List[TypeOrBounds]): Expr[String] = {
+    def printArgs(cfg: Expr[TPrintColors])(args: List[Type]): Expr[String] = {
       val added = args.map {
-        case tpe: Type =>
-          rec0(cfg)(tpe, false)
         case TypeBounds(lo, hi) =>
           printBounds(cfg)(lo, hi)
+        case tpe: Type =>
+          rec0(cfg)(tpe, false)
       }.mkStringExpr(", ")
       Expr("[") + added + Expr("]")
     }
 
 
     object RefinedType {
-      def unapply(tpe: Type): Option[(Type, List[(String, TypeOrBounds)])] = tpe match {
+      def unapply(tpe: Type): Option[(Type, List[(String, Type)])] = tpe match {
         case Refinement(p, i, b) =>
           unapply(p).map {
             case (pp, bs) => (pp, (i -> b) :: bs)
@@ -112,7 +112,7 @@ object TPrintLowPri{
     }
     '{
       new TPrint[T] {
-        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(t.unseal.tpe) } 
+        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(t.unseal.tpe) }
       }
     }
   }
