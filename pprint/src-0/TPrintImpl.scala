@@ -1,8 +1,5 @@
 package pprint
 
-import language.experimental.macros
-import scala.reflect.macros.TypecheckException
-
 trait TPrintLowPri{
   inline given default[T] as TPrint[T] = ${ TPrintLowPri.typePrintImpl[T] }
 }
