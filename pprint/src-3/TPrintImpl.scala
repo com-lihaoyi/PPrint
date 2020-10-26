@@ -38,11 +38,11 @@ object TPrintLowPri{
       if (s.toString.startsWith("_$")) "_"
       else s.toString.stripSuffix(".type")
 
-    def printBounds(cfg: Expr[TPrintColors])(lo: Type, hi: Type) = {
+    def printBounds(cfg: Expr[TPrintColors])(lo: TypeRepr, hi: TypeRepr) = {
       val loTree =
-        if (lo =:= Type.of[Nothing]) None else Some(Expr(" >: ") + rec0(cfg)(lo) )
+        if (lo =:= TypeRepr.of[Nothing]) None else Some(Expr(" >: ") + rec0(cfg)(lo) )
       val hiTree =
-        if (hi =:= Type.of[Any]) None else Some(Expr(" <: ") + rec0(cfg)(hi) )
+        if (hi =:= TypeRepr.of[Any]) None else Some(Expr(" <: ") + rec0(cfg)(hi) )
       val underscore = Expr("_")
       loTree.orElse(hiTree).map(underscore + _).getOrElse(underscore)
     }
@@ -64,11 +64,11 @@ object TPrintLowPri{
     }
 
 
-    def printArgs(cfg: Expr[TPrintColors])(args: List[Type]): Expr[String] = {
+    def printArgs(cfg: Expr[TPrintColors])(args: List[TypeRepr]): Expr[String] = {
       val added = args.map {
         case TypeBounds(lo, hi) =>
           printBounds(cfg)(lo, hi)
-        case tpe: Type =>
+        case tpe: TypeRepr =>
           rec0(cfg)(tpe, false)
       }.mkStringExpr(", ")
       Expr("[") + added + Expr("]")
@@ -76,7 +76,7 @@ object TPrintLowPri{
 
 
     object RefinedType {
-      def unapply(tpe: Type): Option[(Type, List[(String, Type)])] = tpe match {
+      def unapply(tpe: TypeRepr): Option[(TypeRepr, List[(String, TypeRepr)])] = tpe match {
         case Refinement(p, i, b) =>
           unapply(p).map {
             case (pp, bs) => (pp, (i -> b) :: bs)
@@ -85,7 +85,7 @@ object TPrintLowPri{
       }
     }
 
-    def rec0(cfg: Expr[TPrintColors])(tpe: Type, end: Boolean = false): Expr[String] = tpe match {
+    def rec0(cfg: Expr[TPrintColors])(tpe: TypeRepr, end: Boolean = false): Expr[String] = tpe match {
       case TypeRef(NoPrefix(), sym) =>
         printSym(cfg, sym)
         // TODO: Add prefix handling back in once it works!
@@ -96,7 +96,7 @@ object TPrintLowPri{
       case RefinedType(tpe, refinements) =>
         val pre = rec0(cfg)(tpe)
         lazy val defs = refinements.collect {
-          case (name, tpe: Type) =>
+          case (name, tpe: TypeRepr) =>
             Expr("type " + name + " = ") + rec0(cfg)(tpe)
           case (name, TypeBounds(lo, hi)) =>
             Expr("type " + name) + printBounds(cfg)(lo, hi) + rec0(cfg)(tpe)
