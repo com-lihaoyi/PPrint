@@ -25,7 +25,7 @@ object TPrintLowPri{
       }
   }
 
-  def typePrintImpl[T](using qctx: QuoteContext, t: Type[T]): Expr[TPrint[T]] = {
+  def typePrintImpl[T](using QuoteContext, Type[T]): Expr[TPrint[T]] = {
 
     import qctx.reflect._
     import util._
@@ -104,12 +104,12 @@ object TPrintLowPri{
         pre + (if(refinements.isEmpty) '{ "" } else Expr("{") + defs + Expr("}"))
       case AnnotatedType(parent, annot) =>
         rec0(cfg)(parent, end)
-      case _=>
-        Expr(t.show)
+      case _ =>
+        Expr(Type.show[T])
     }
     '{
       new TPrint[T] {
-        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(t.unseal.tpe) }
+        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(TypeRepr.of[T]) }
       }
     }
   }

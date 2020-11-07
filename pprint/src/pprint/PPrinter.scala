@@ -82,7 +82,6 @@ case class PPrinter(defaultWidth: Int = 100,
                  initialOffset: Int = 0): Unit = {
     tokenize(x, width, height, indent, initialOffset).foreach(print)
     println()
-    x
   }
 
   /**
