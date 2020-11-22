@@ -11,12 +11,12 @@ object TPrintLowPri{
 
 
   extension (expr: Expr[String]) {
-    def +(other: Expr[String])(using QuoteContext): Expr[String] =
+    def +(other: Expr[String])(using Quotes): Expr[String] =
       '{ $expr + $other }
   }
 
   extension (exprs: List[Expr[String]]) {
-    def mkStringExpr(sep: String)(using QuoteContext): Expr[String] =
+    def mkStringExpr(sep: String)(using Quotes): Expr[String] =
       exprs match {
         case expr :: Nil =>
           expr
@@ -25,7 +25,7 @@ object TPrintLowPri{
       }
   }
 
-  def typePrintImpl[T](using QuoteContext, Type[T]): Expr[TPrint[T]] = {
+  def typePrintImpl[T](using Quotes, Type[T]): Expr[TPrint[T]] = {
 
     import qctx.reflect._
     import util._
