@@ -27,7 +27,7 @@ object TPrintLowPri{
 
   def typePrintImpl[T](using Quotes, Type[T]): Expr[TPrint[T]] = {
 
-    import qctx.reflect._
+    import quotes.reflect._
     import util._
 
     def literalColor(cfg: Expr[TPrintColors], s: Expr[fansi.Str]) = {
