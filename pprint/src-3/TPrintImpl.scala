@@ -11,12 +11,12 @@ object TPrintLowPri{
 
 
   extension (expr: Expr[String]) {
-    def +(other: Expr[String])(using QuoteContext): Expr[String] =
+    def +(other: Expr[String])(using Quotes): Expr[String] =
       '{ $expr + $other }
   }
 
   extension (exprs: List[Expr[String]]) {
-    def mkStringExpr(sep: String)(using QuoteContext): Expr[String] =
+    def mkStringExpr(sep: String)(using Quotes): Expr[String] =
       exprs match {
         case expr :: Nil =>
           expr
@@ -25,9 +25,9 @@ object TPrintLowPri{
       }
   }
 
-  def typePrintImpl[T](using qctx: QuoteContext, t: Type[T]): Expr[TPrint[T]] = {
+  def typePrintImpl[T](using Quotes, Type[T]): Expr[TPrint[T]] = {
 
-    import qctx.tasty._
+    import quotes.reflect._
     import util._
 
     def literalColor(cfg: Expr[TPrintColors], s: Expr[fansi.Str]) = {
@@ -104,12 +104,12 @@ object TPrintLowPri{
         pre + (if(refinements.isEmpty) '{ "" } else Expr("{") + defs + Expr("}"))
       case AnnotatedType(parent, annot) =>
         rec0(cfg)(parent, end)
-      case _=>
-        Expr(t.show)
+      case _ =>
+        Expr(Type.show[T])
     }
     '{
       new TPrint[T] {
-        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(t.unseal.tpe) }
+        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(TypeRepr.of[T]) }
       }
     }
   }
