@@ -1,8 +1,5 @@
 package pprint
 
-import language.experimental.macros
-import scala.reflect.macros.TypecheckException
-
 trait TPrintLowPri{
   inline given default[T] as TPrint[T] = ${ TPrintLowPri.typePrintImpl[T] }
 }
@@ -14,12 +11,12 @@ object TPrintLowPri{
 
 
   extension (expr: Expr[String]) {
-    def +(other: Expr[String])(using QuoteContext): Expr[String] =
+    def +(other: Expr[String])(using Quotes): Expr[String] =
       '{ $expr + $other }
   }
 
   extension (exprs: List[Expr[String]]) {
-    def mkStringExpr(sep: String)(using QuoteContext): Expr[String] =
+    def mkStringExpr(sep: String)(using Quotes): Expr[String] =
       exprs match {
         case expr :: Nil =>
           expr
@@ -28,9 +25,9 @@ object TPrintLowPri{
       }
   }
 
-  def typePrintImpl[T](using qctx: QuoteContext, t: Type[T]): Expr[TPrint[T]] = {
+  def typePrintImpl[T](using Quotes, Type[T]): Expr[TPrint[T]] = {
 
-    import qctx.tasty._
+    import quotes.reflect._
     import util._
 
     def literalColor(cfg: Expr[TPrintColors], s: Expr[fansi.Str]) = {
@@ -41,11 +38,11 @@ object TPrintLowPri{
       if (s.toString.startsWith("_$")) "_"
       else s.toString.stripSuffix(".type")
 
-    def printBounds(cfg: Expr[TPrintColors])(lo: Type, hi: Type) = {
+    def printBounds(cfg: Expr[TPrintColors])(lo: TypeRepr, hi: TypeRepr) = {
       val loTree =
-        if (lo =:= typeOf[Nothing]) None else Some(Expr(" >: ") + rec0(cfg)(lo) )
+        if (lo =:= TypeRepr.of[Nothing]) None else Some(Expr(" >: ") + rec0(cfg)(lo) )
       val hiTree =
-        if (hi =:= typeOf[Any]) None else Some(Expr(" <: ") + rec0(cfg)(hi) )
+        if (hi =:= TypeRepr.of[Any]) None else Some(Expr(" <: ") + rec0(cfg)(hi) )
       val underscore = Expr("_")
       loTree.orElse(hiTree).map(underscore + _).getOrElse(underscore)
     }
@@ -67,19 +64,19 @@ object TPrintLowPri{
     }
 
 
-    def printArgs(cfg: Expr[TPrintColors])(args: List[TypeOrBounds]): Expr[String] = {
+    def printArgs(cfg: Expr[TPrintColors])(args: List[TypeRepr]): Expr[String] = {
       val added = args.map {
-        case tpe: Type =>
-          rec0(cfg)(tpe, false)
         case TypeBounds(lo, hi) =>
           printBounds(cfg)(lo, hi)
+        case tpe: TypeRepr =>
+          rec0(cfg)(tpe, false)
       }.mkStringExpr(", ")
       Expr("[") + added + Expr("]")
     }
 
 
     object RefinedType {
-      def unapply(tpe: Type): Option[(Type, List[(String, TypeOrBounds)])] = tpe match {
+      def unapply(tpe: TypeRepr): Option[(TypeRepr, List[(String, TypeRepr)])] = tpe match {
         case Refinement(p, i, b) =>
           unapply(p).map {
             case (pp, bs) => (pp, (i -> b) :: bs)
@@ -88,7 +85,7 @@ object TPrintLowPri{
       }
     }
 
-    def rec0(cfg: Expr[TPrintColors])(tpe: Type, end: Boolean = false): Expr[String] = tpe match {
+    def rec0(cfg: Expr[TPrintColors])(tpe: TypeRepr, end: Boolean = false): Expr[String] = tpe match {
       case TypeRef(NoPrefix(), sym) =>
         printSym(cfg, sym)
         // TODO: Add prefix handling back in once it works!
@@ -99,7 +96,7 @@ object TPrintLowPri{
       case RefinedType(tpe, refinements) =>
         val pre = rec0(cfg)(tpe)
         lazy val defs = refinements.collect {
-          case (name, tpe: Type) =>
+          case (name, tpe: TypeRepr) =>
             Expr("type " + name + " = ") + rec0(cfg)(tpe)
           case (name, TypeBounds(lo, hi)) =>
             Expr("type " + name) + printBounds(cfg)(lo, hi) + rec0(cfg)(tpe)
@@ -107,12 +104,12 @@ object TPrintLowPri{
         pre + (if(refinements.isEmpty) '{ "" } else Expr("{") + defs + Expr("}"))
       case AnnotatedType(parent, annot) =>
         rec0(cfg)(parent, end)
-      case _=>
-        Expr(t.show)
+      case _ =>
+        Expr(Type.show[T])
     }
     '{
       new TPrint[T] {
-        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(t.unseal.tpe) } 
+        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(TypeRepr.of[T]) }
       }
     }
   }

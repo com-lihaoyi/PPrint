@@ -26,10 +26,12 @@ trait PPrintMainModule extends CrossScalaModule {
     ivy"com.lihaoyi::fansi::0.2.9",
     ivy"com.lihaoyi::sourcecode::0.2.1"
   )
-  def compileIvyDeps = Agg(
-    ivy"${scalaOrganization()}:scala-reflect:${scalaVersion()}",
-    ivy"${scalaOrganization()}:scala-compiler:${scalaVersion()}"
-  )
+  def compileIvyDeps =
+    if (crossScalaVersion.startsWith("2")) Agg(
+      ivy"${scalaOrganization()}:scala-reflect:${scalaVersion()}",
+      ivy"${scalaOrganization()}:scala-compiler:${scalaVersion()}"
+    )
+    else Agg.empty[Dep]
   def offset: os.RelPath = os.rel
   def sources = T.sources(
     super.sources()
@@ -79,7 +81,7 @@ trait PPrintMainModule extends CrossScalaModule {
 trait PPrintTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.4")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.5")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
@@ -99,7 +101,7 @@ trait PPrintTestModule extends ScalaModule with TestModule {
 object pprint extends Module {
 
   val dottyVersion = Option(sys.props("dottyVersion"))
-  object jvm extends Cross[JvmPPrintModule]((List("2.12.8", "2.13.1", "0.27.0-RC1") ++ dottyVersion): _*)
+  object jvm extends Cross[JvmPPrintModule]((List("2.12.8", "2.13.1", "3.0.0-M2") ++ dottyVersion): _*)
 
   class JvmPPrintModule(val crossScalaVersion: String)
     extends PPrintMainModule with ScalaModule with PPrintModule {
@@ -110,10 +112,10 @@ object pprint extends Module {
     override def docJar =
       if (crossScalaVersion.startsWith("2")) super.docJar
       else T {
-	val outDir = T.ctx().dest
-	val javadocDir = outDir / 'javadoc
-	os.makeDir.all(javadocDir)
-	mill.api.Result.Success(mill.modules.Jvm.createJar(Agg(javadocDir))(outDir))
+      	val outDir = T.ctx().dest
+      	val javadocDir = outDir / 'javadoc
+      	os.makeDir.all(javadocDir)
+      	mill.api.Result.Success(mill.modules.Jvm.createJar(Agg(javadocDir))(outDir))
       }
   }
 
