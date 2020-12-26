@@ -101,7 +101,7 @@ trait PPrintTestModule extends ScalaModule with TestModule {
 object pprint extends Module {
 
   val dottyVersion = Option(sys.props("dottyVersion"))
-  object jvm extends Cross[JvmPPrintModule]((List("2.12.8", "2.13.1", "3.0.0-M2") ++ dottyVersion): _*)
+  object jvm extends Cross[JvmPPrintModule]((List("2.12.8", "2.13.1", "3.0.0-M3") ++ dottyVersion): _*)
 
   class JvmPPrintModule(val crossScalaVersion: String)
     extends PPrintMainModule with ScalaModule with PPrintModule {
