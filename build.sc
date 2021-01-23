@@ -1,10 +1,25 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
+import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
 
+val dottyVersions = sys.props.get("dottyVersion").toList
+
+val scalaVersions = "2.12.13" :: "2.13.4" :: "3.0.0-M3" :: dottyVersions
+val scala2Versions = scalaVersions.filter(_.startsWith("2."))
+
+val scalaJSVersions = for {
+  scalaV <- scala2Versions
+  scalaJSV <- Seq("0.6.33", "1.4.0")
+} yield (scalaV, scalaJSV)
+
+val scalaNativeVersions = for {
+  scalaV <- scala2Versions
+  scalaNativeV <- Seq("0.4.0")
+} yield (scalaV, scalaNativeV)
 
 trait PPrintModule extends PublishModule {
   def artifactName = "pprint"
 
-  def publishVersion = "0.6.0"
+  def publishVersion = "0.6.1"
 
   def pomSettings = PomSettings(
     description = artifactName(),
@@ -23,8 +38,8 @@ trait PPrintModule extends PublishModule {
 trait PPrintMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::fansi::0.2.9",
-    ivy"com.lihaoyi::sourcecode::0.2.1"
+    ivy"com.lihaoyi::fansi::0.2.10",
+    ivy"com.lihaoyi::sourcecode::0.2.3"
   )
   def compileIvyDeps =
     if (crossScalaVersion.startsWith("2")) Agg(
@@ -81,7 +96,7 @@ trait PPrintMainModule extends CrossScalaModule {
 trait PPrintTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.5")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.7")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
@@ -99,10 +114,7 @@ trait PPrintTestModule extends ScalaModule with TestModule {
 }
 
 object pprint extends Module {
-
-  val dottyVersion = Option(sys.props("dottyVersion"))
-  object jvm extends Cross[JvmPPrintModule]((List("2.12.8", "2.13.1", "3.0.0-M2") ++ dottyVersion): _*)
-
+  object jvm extends Cross[JvmPPrintModule](scalaVersions:_*)
   class JvmPPrintModule(val crossScalaVersion: String)
     extends PPrintMainModule with ScalaModule with PPrintModule {
     object test extends Tests with PPrintTestModule{
@@ -119,10 +131,7 @@ object pprint extends Module {
       }
   }
 
-  object js extends Cross[JsPPrintModule](
-    ("2.12.8", "0.6.31"), ("2.13.0", "0.6.31"),
-    ("2.12.8", "1.0.0"), ("2.13.0", "1.0.0")
-  )
+  object js extends Cross[JsPPrintModule](scalaJSVersions:_*)
   class JsPPrintModule(val crossScalaVersion: String, crossJSVersion: String)
     extends PPrintMainModule with ScalaJSModule with PPrintModule {
     def offset = os.up
@@ -133,9 +142,7 @@ object pprint extends Module {
     }
   }
 
-  object native extends Cross[NativePPrintModule](
-    ("2.11.12", "0.3.9"), ("2.11.12", "0.4.0-M2")
-  )
+  object native extends Cross[NativePPrintModule](scalaNativeVersions:_*)
   class NativePPrintModule(val crossScalaVersion: String, crossScalaNativeVersion: String)
     extends PPrintMainModule with ScalaNativeModule with PPrintModule {
     def offset = os.up
