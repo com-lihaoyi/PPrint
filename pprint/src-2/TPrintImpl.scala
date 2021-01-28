@@ -195,7 +195,7 @@ object TPrintLowPri{
       case ConstantType(value) =>
         q"$value.toString"
     }
-    lazy val cfgSym = c.freshName[TermName]("cfg")
+    lazy val cfgSym = c.freshName[TermName](TermName("cfg"))
     val res = c.Expr[TPrint[T]](q"""_root_.pprint.TPrint.lambda{
       ($cfgSym: _root_.pprint.TPrintColors) =>
         ${rec0(tpe, end = true)}
