@@ -67,7 +67,7 @@ abstract class Walker{
         if (x.exists(c => c == '\n' || c == '\r')) Tree.Literal("\"\"\"" + x + "\"\"\"")
         else Tree.Literal(Util.literalize(x))
 
-      case x: Symbol => Tree.Literal(x.toString)
+      case x: Symbol => Tree.Literal("'" + x.name)
 
       case x: scala.collection.Map[_, _] =>
         Tree.Apply(
