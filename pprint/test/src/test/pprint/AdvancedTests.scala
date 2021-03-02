@@ -1,6 +1,7 @@
 package test.pprint
 
 import utest._
+import pprint.PPrinter
 
 import scala.collection.SortedMap
 
@@ -183,6 +184,23 @@ object AdvancedTests extends TestSuite{
             assert(count == 4)
           }
         }
+      }
+
+      test("unicode"){
+        val withEscaping = new PPrinter(){
+          override def escapeUnicode = true
+        }
+        val withoutEscaping = new PPrinter(){
+          override def escapeUnicode = false
+        }
+
+        val toCheck = List("foo", "йцук", "漢字")
+
+        val withEscapingRes = withEscaping.apply(toCheck).plainText
+        val withoutEscapingRes = withoutEscaping.apply(toCheck).plainText
+
+        assert(withEscapingRes == "List(\"foo\", \"\\u0439\\u0446\\u0443\\u043a\", \"\\u6f22\\u5b57\")")
+        assert(withoutEscapingRes == """List("foo", "йцук", "漢字")""")
       }
     }
   }

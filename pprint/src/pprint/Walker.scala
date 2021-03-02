@@ -46,6 +46,7 @@ object Tree{
 abstract class Walker{
   val tuplePrefix = "scala.Tuple"
   def showFieldNames = true
+  def escapeUnicode = false
   def additionalHandlers: PartialFunction[Any, Tree]
   def treeify(x: Any): Tree = additionalHandlers.lift(x).getOrElse{
     x match{
@@ -54,7 +55,7 @@ abstract class Walker{
       case x: Char =>
         val sb = new StringBuilder
         sb.append('\'')
-        Util.escapeChar(x, sb)
+        Util.escapeChar(x, sb, escapeUnicode)
         sb.append('\'')
         Tree.Literal(sb.toString)
       case x: Byte => Tree.Literal(x.toString)
@@ -65,7 +66,7 @@ abstract class Walker{
       case x: Double => Tree.Literal(x.toString)
       case x: String =>
         if (x.exists(c => c == '\n' || c == '\r')) Tree.Literal("\"\"\"" + x + "\"\"\"")
-        else Tree.Literal(Util.literalize(x))
+        else Tree.Literal(Util.literalize(x, escapeUnicode))
 
       case x: Symbol => Tree.Literal("'" + x.name)
 
