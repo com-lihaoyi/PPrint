@@ -9,8 +9,9 @@ val scalaVersions = "2.12.13" :: "2.13.4" :: "3.0.0-RC1" :: dottyVersions
 val scala2Versions = scalaVersions.filter(_.startsWith("2."))
 
 val scalaJSVersions = for {
-  scalaV <- scala2Versions
+  scalaV <- scalaVersions
   scalaJSV <- Seq("0.6.33", "1.4.0")
+  if scalaV.startsWith("2.") || scalaJSV.startsWith("1.")
 } yield (scalaV, scalaJSV)
 
 val scalaNativeVersions = for {
@@ -40,8 +41,8 @@ trait PPrintModule extends PublishModule {
 trait PPrintMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::fansi::0.2.10",
-    ivy"com.lihaoyi::sourcecode::0.2.3"
+    ivy"com.lihaoyi::fansi::0.2.11",
+    ivy"com.lihaoyi::sourcecode::0.2.4"
   )
   def compileIvyDeps =
     if (crossScalaVersion.startsWith("2")) Agg(
@@ -122,15 +123,6 @@ object pprint extends Module {
     object test extends Tests with PPrintTestModule{
       val crossScalaVersion = JvmPPrintModule.this.crossScalaVersion
     }
-
-    override def docJar =
-      if (crossScalaVersion.startsWith("2")) super.docJar
-      else T {
-      	val outDir = T.ctx().dest
-      	val javadocDir = outDir / 'javadoc
-      	os.makeDir.all(javadocDir)
-      	mill.api.Result.Success(mill.modules.Jvm.createJar(Agg(javadocDir))(outDir))
-      }
   }
 
   object js extends Cross[JsPPrintModule](scalaJSVersions:_*)
