@@ -107,6 +107,12 @@ case class PPrinter(defaultWidth: Int = 100,
     val truncated = new Truncated(rendered, width, height)
     truncated
   }
+
+  /**
+    * @return A new [[PPrinter]] that prints field names for case classes/Product
+    */
+  def showFieldNames: PPrinter = this.copy(
+    additionalHandlers = this.additionalHandlers orElse PPrinter.showFieldNamesHandler)
 }
 
 object PPrinter {
@@ -115,4 +121,28 @@ object PPrinter {
     colorLiteral = fansi.Attrs.Empty,
     colorApplyPrefix = fansi.Attrs.Empty
   )
+
+  // Taken from https://stackoverflow.com/questions/15718506/scala-how-to-print-case-classes-like-pretty-printed-tree/57080463#57080463
+  def showFieldNamesHandler: PartialFunction[Any, Tree] = {
+    case x: Product =>
+      val className = x.getClass.getName
+      // see source code for pprint.treeify()
+      val shouldNotPrettifyCaseClass = x.productArity == 0 ||
+        (x.productArity == 2 && Util.isOperator(x.productPrefix)) ||
+        className.startsWith(pprint.tuplePrefix) ||
+        className == "scala.Some"
+
+      if (shouldNotPrettifyCaseClass)
+        pprint.treeify(x)
+      else {
+        val fieldMap = ProductSupport.caseClassToMap(x)
+        pprint.Tree.Apply(
+          x.productPrefix,
+          fieldMap.iterator.flatMap { case (k, v) =>
+            val prettyValue: Tree = pprintAdditionalHandlers.lift(v).getOrElse(pprint2.treeify(v))
+            Seq(pprint.Tree.Infix(Tree.Literal(k), "=", prettyValue))
+          }
+        )
+      }
+  }
 }

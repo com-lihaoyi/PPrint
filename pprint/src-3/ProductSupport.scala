@@ -13,4 +13,9 @@ object ProductSupport {
       }
   }
 
+  def caseClassToMap(cc: Product): Map[String, Any] =
+    cc.productIterator.zipWithIndex.map{case (c, index) =>
+      val name = cc.productElementName(index)
+      (name, c)
+    }.toMap
 }
