@@ -5,12 +5,12 @@ import de.tobiasroeser.mill.vcs.version.VcsVersion
 
 val dottyVersions = sys.props.get("dottyVersion").toList
 
-val scalaVersions = "2.12.13" :: "2.13.4" :: "2.11.12" :: "3.0.0-RC3" :: dottyVersions
+val scalaVersions = "2.12.13" :: "2.13.4" :: "2.11.12" :: "3.0.0" :: dottyVersions
 val scala2Versions = scalaVersions.filter(_.startsWith("2."))
 
 val scalaJSVersions = for {
   scalaV <- scalaVersions
-  scalaJSV <- Seq("0.6.33", "1.4.0")
+  scalaJSV <- Seq("0.6.33", "1.5.1")
   if scalaV.startsWith("2.") || scalaJSV.startsWith("1.")
 } yield (scalaV, scalaJSV)
 
@@ -41,8 +41,8 @@ trait PPrintModule extends PublishModule {
 trait PPrintMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::fansi::0.2.13",
-    ivy"com.lihaoyi::sourcecode::0.2.6"
+    ivy"com.lihaoyi::fansi::0.2.14",
+    ivy"com.lihaoyi::sourcecode::0.2.7"
   )
   def compileIvyDeps =
     if (crossScalaVersion.startsWith("2")) Agg(
@@ -99,7 +99,7 @@ trait PPrintMainModule extends CrossScalaModule {
 trait PPrintTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.9")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.10")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
