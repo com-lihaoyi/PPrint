@@ -111,7 +111,14 @@ abstract class Walker{
             Tree.Apply(x.productPrefix, ProductSupport.treeifyProductElements(x, this))
         }
 
-      case x => Tree.Lazy(ctx => Iterator(x.toString))
+      case x => Tree.Lazy(ctx =>
+        Iterator(
+          x.toString match{
+            case null => "null"
+            case s =>s
+          }
+        )
+      )
     }
   }
 
