@@ -15,15 +15,12 @@ package pprint
 case class PPrinter(defaultWidth: Int = 100,
                     defaultHeight: Int = 500,
                     defaultIndent: Int = 2,
+                    defaultEscapeUnicode: Boolean = true,
+                    defaultShowFieldNames: Boolean = true,
                     colorLiteral: fansi.Attrs = fansi.Color.Green,
                     colorApplyPrefix: fansi.Attrs = fansi.Color.Yellow,
                     additionalHandlers: PartialFunction[Any, Tree] = PartialFunction.empty)
   extends Walker{ outer =>
-
-  /**
-    * How to convert a thing into a [[Tree]] that can be pretty-printed.
-    */
-  override def treeify(x: Any) = super.treeify(x)
 
   /**
     * Logs a given value to stdout with some metadata to identify where the log
@@ -35,13 +32,10 @@ case class PPrinter(defaultWidth: Int = 100,
              width: Int = defaultWidth,
              height: Int = defaultHeight,
              indent: Int = defaultIndent,
-             initialOffset: Int = 0)
+             escapeUnicode: Boolean = defaultEscapeUnicode,
+             showFieldNames: Boolean = defaultShowFieldNames)
             (implicit line: sourcecode.Line,
              fileName: sourcecode.FileName): T = {
-
-    def joinSeq[T](seq: Seq[T], sep: T): Seq[T] = {
-      seq.flatMap(x => Seq(x, sep)).dropRight(1)
-    }
 
     val tagStrs =
       if (tag.isEmpty) Seq()
@@ -55,7 +49,17 @@ case class PPrinter(defaultWidth: Int = 100,
       fansi.Color.Cyan(x.source),
       fansi.Str(": ")
     ) ++ tagStrs
-    val str = fansi.Str.join(prefix ++ tokenize(x.value, width, height, indent).toSeq:_*)
+    val str = fansi.Str.join(
+      prefix ++
+      tokenize(
+        x.value,
+        width,
+        height,
+        indent,
+        escapeUnicode = escapeUnicode,
+        showFieldNames = showFieldNames
+      ).toSeq:_*
+    )
 
     println(str)
     x.value
@@ -68,8 +72,20 @@ case class PPrinter(defaultWidth: Int = 100,
             width: Int = defaultWidth,
             height: Int = defaultHeight,
             indent: Int = defaultIndent,
-            initialOffset: Int = 0): fansi.Str = {
-    fansi.Str.join(this.tokenize(x, width, height, indent).toSeq:_*)
+            initialOffset: Int = 0,
+            escapeUnicode: Boolean = defaultEscapeUnicode,
+            showFieldNames: Boolean = defaultShowFieldNames): fansi.Str = {
+    fansi.Str.join(
+      this.tokenize(
+        x,
+        width,
+        height,
+        indent,
+        initialOffset,
+        escapeUnicode = escapeUnicode,
+        showFieldNames = showFieldNames
+      ).toSeq:_*
+    )
   }
 
   /**
@@ -78,9 +94,19 @@ case class PPrinter(defaultWidth: Int = 100,
   def pprintln[T](x: T,
                   width: Int = defaultWidth,
                   height: Int = defaultHeight,
-                 indent: Int = defaultIndent,
-                 initialOffset: Int = 0): Unit = {
-    tokenize(x, width, height, indent, initialOffset).foreach(print)
+                  indent: Int = defaultIndent,
+                  initialOffset: Int = 0,
+                  escapeUnicode: Boolean = defaultEscapeUnicode,
+                  showFieldNames: Boolean = defaultShowFieldNames): Unit = {
+    tokenize(
+      x,
+      width,
+      height,
+      indent,
+      initialOffset,
+      escapeUnicode = escapeUnicode,
+      showFieldNames = showFieldNames
+    ).foreach(print)
     println()
   }
 
@@ -92,12 +118,14 @@ case class PPrinter(defaultWidth: Int = 100,
                width: Int = defaultWidth,
                height: Int = defaultHeight,
                indent: Int = defaultIndent,
-               initialOffset: Int = 0): Iterator[fansi.Str] = {
+               initialOffset: Int = 0,
+               escapeUnicode: Boolean = defaultEscapeUnicode,
+               showFieldNames: Boolean = defaultShowFieldNames): Iterator[fansi.Str] = {
 
     // The three stages within the pretty-printing process:
 
     // Convert the Any into a lazy Tree of `Apply`, `Infix` and `Lazy`/`Strict` literals
-    val tree = this.treeify(x)
+    val tree = this.treeify(x, escapeUnicode, showFieldNames)
     // Render the `Any` into a stream of tokens, properly indented and wrapped
     // at the given width
     val renderer = new Renderer(width, colorApplyPrefix, colorLiteral, indent)
