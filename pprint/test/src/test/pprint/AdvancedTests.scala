@@ -185,6 +185,15 @@ object AdvancedTests extends TestSuite{
         }
       }
     }
+
+    test("toStringReturnsNull"){
+      class ClassWithNullToString {
+        override def toString = null
+      }
+      val rendered = Check.color(new ClassWithNullToString)
+      assert(rendered.plainText == "null")
+
+    }
   }
 
 
