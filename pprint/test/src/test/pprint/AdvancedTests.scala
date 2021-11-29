@@ -187,12 +187,8 @@ object AdvancedTests extends TestSuite{
       }
 
       test("unicode"){
-        val withEscaping = new PPrinter(){
-          override def escapeUnicode = true
-        }
-        val withoutEscaping = new PPrinter(){
-          override def escapeUnicode = false
-        }
+        val withEscaping = new PPrinter(escapeUnicode = true)
+        val withoutEscaping = new PPrinter(escapeUnicode = false)
 
         val toCheck = List("foo", "йцук", "漢字")
 
