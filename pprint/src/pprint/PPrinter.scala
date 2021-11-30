@@ -15,7 +15,7 @@ package pprint
 case class PPrinter(defaultWidth: Int = 100,
                     defaultHeight: Int = 500,
                     defaultIndent: Int = 2,
-                    defaultEscapeUnicode: Boolean = true,
+                    defaultEscapeUnicode: Boolean = false,
                     defaultShowFieldNames: Boolean = true,
                     colorLiteral: fansi.Attrs = fansi.Color.Green,
                     colorApplyPrefix: fansi.Attrs = fansi.Color.Yellow,
