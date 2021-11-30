@@ -81,7 +81,7 @@ object Util{
     var i = 0
     val len = s.length
     while (i < len) {
-      Util.escapeChar(s(i), sb)
+      Util.escapeChar(s(i), sb, unicode)
       i += 1
     }
     sb.append('"')

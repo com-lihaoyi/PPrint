@@ -9,9 +9,8 @@ object UnitTests extends TestSuite{
 
   val tests = TestSuite{
     test("escapeChar"){
-      def check(c: Char, expected: String) = {
-
-        val escaped = pprint.Util.escapeChar(c, new StringBuilder).toString
+      def check(c: Char, expected: String, unicode: Boolean = true) = {
+        val escaped = pprint.Util.escapeChar(c, new StringBuilder, unicode).toString
         assert(escaped == expected)
       }
       check('a', "a")
@@ -19,6 +18,8 @@ object UnitTests extends TestSuite{
       check('\n', "\\n")
       check('\\', "\\\\")
       check('\t', "\\t")
+      check('й', "\\u0439", true)
+      check('й', "й", false)
     }
     test("literalize"){
       val simple = pprint.Util.literalize("hi i am a cow")
@@ -28,6 +29,16 @@ object UnitTests extends TestSuite{
       val escaped = pprint.Util.literalize("hi i am a \"cow\"")
       val escapedExpected = """ "hi i am a \"cow\"" """.trim
       assert(escaped == escapedExpected)
+
+      val withUnicodeStr = "with юникод"
+
+      val withUnicodeEscaped = pprint.Util.literalize(withUnicodeStr, true)
+      val withUnicodeEscapedExpected = "\"with \\u044e\\u043d\\u0438\\u043a\\u043e\\u0434\""
+      assert(withUnicodeEscaped == withUnicodeEscapedExpected)
+
+      val withUnicodeUnescaped = pprint.Util.literalize(withUnicodeStr, false)
+      val withUnicodeUnescapedExpected = """ "with юникод" """.trim
+      assert(withUnicodeUnescaped == withUnicodeUnescapedExpected)
     }
     test("concatIter"){
 

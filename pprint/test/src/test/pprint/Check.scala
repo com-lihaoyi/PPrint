@@ -2,12 +2,8 @@ package test.pprint
 import pprint.PPrinter
 
 object Check{
-  val blackWhite = new PPrinter(){
-    override def showFieldNames = false
-  }
-  val color = new PPrinter(){
-    override def showFieldNames = false
-  }
+  val blackWhite = new PPrinter(defaultShowFieldNames = false)
+  val color = new PPrinter(defaultShowFieldNames = false)
   val blackWhiteFields = new PPrinter()
   val colorFields = new PPrinter()
 }
