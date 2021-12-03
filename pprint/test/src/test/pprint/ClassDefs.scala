@@ -180,6 +180,7 @@ object Issue28{
     override def canEqual(that: Any): Boolean = false
   }
 }
+
 object Issue94{
   class Foo(val x: String){
     override def toString = x
