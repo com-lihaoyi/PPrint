@@ -152,6 +152,10 @@ object DerivationTests extends TestSuite{
         days2 == "SECONDS"
       )
     }
+    test("issue28"){
+      val r = new Issue28.MyProduct2 
+      Check(r : Issue28.MyProduct2, """("asdf", 333)""")
+    }
     test("issue92"){
       val r = new Issue92.Rational {
         override def compare(that: Issue92.Rational): Int = ???
