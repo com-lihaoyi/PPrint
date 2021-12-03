@@ -64,39 +64,6 @@ trait PPrintMainModule extends CrossScalaModule {
         )
       )
   )
-  def generatedSources = T{
-    val dir = T.ctx().dest
-    val file = dir/"pprint"/"TPrintGen.scala"
-
-    val typeGen = for(i <- 2 to 22) yield {
-      val ts = (1 to i).map("T" + _).mkString(", ")
-      val tsBounded = (1 to i).map("T" + _ + ": Type").mkString(", ")
-      val tsGet = (1 to i).map("get[T" + _ + "](cfg)").mkString(" + \", \" + ")
-      s"""
-          implicit def F${i}TPrint[$tsBounded, R: Type]: Type[($ts) => R] = make[($ts) => R](cfg =>
-            "(" + $tsGet + ") => " + get[R](cfg)
-          )
-          implicit def T${i}TPrint[$tsBounded]: Type[($ts)] = make[($ts)](cfg =>
-            "(" + $tsGet + ")"
-          )
-        """
-    }
-    val output = s"""
-        package pprint
-        trait TPrintGen[Type[_], Cfg]{
-          def make[T](f: Cfg => String): Type[T]
-          def get[T: Type](cfg: Cfg): String
-          implicit def F0TPrint[R: Type]: Type[() => R] = make[() => R](cfg => "() => " + get[R](cfg))
-          implicit def F1TPrint[T1: Type, R: Type]: Type[T1 => R] = {
-            make[T1 => R](cfg => get[T1](cfg) + " => " + get[R](cfg))
-          }
-          ${typeGen.mkString("\n")}
-        }
-      """.stripMargin
-    os.write(file, output, createFolders = true)
-    Seq(PathRef(file))
-  }
-
 }
 
 
