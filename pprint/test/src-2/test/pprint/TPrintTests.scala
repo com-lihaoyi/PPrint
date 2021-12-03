@@ -16,7 +16,7 @@ object TPrintTests extends TestSuite{
     }
 
     def check[T](expected: String*)(implicit tprint: TPrint[T]) = {
-      val tprinted = tprint.render.toString()
+      val tprinted = tprint.render.render
       assert(expected.contains(tprinted))
     }
     test("plain"){

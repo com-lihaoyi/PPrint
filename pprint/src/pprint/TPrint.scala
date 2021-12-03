@@ -10,14 +10,14 @@ package pprint
   *   what's currently in scope
   */
 trait TPrint[T] {
-  def render: fansi.Str
+  def render(implicit tpc: TPrintColors): fansi.Str
 
 }
 
 object TPrint extends TPrintLowPri{
-  def recolor[T](s: fansi.Str)(implicit tpc: TPrintColors): TPrint[T] = {
+  def recolor[T](s: fansi.Str): TPrint[T] = {
     new TPrint[T]{
-      def render = {
+      def render(implicit tpc: TPrintColors) = {
         val colors = s.getColors
         val updatedColors = colors.map{
           c => if (c == fansi.Color.Green.applyMask) tpc.typeColor.applyMask else 0L
@@ -27,6 +27,9 @@ object TPrint extends TPrintLowPri{
     }
   }
   def implicitly[T](implicit t: TPrint[T]): TPrint[T] = t
+  implicit val NothingTPrint: TPrint[Nothing] =
+    recolor[Nothing](fansi.Color.Green("Nothing"))
+
 }
 
 case class TPrintColors(typeColor: fansi.Attrs)
