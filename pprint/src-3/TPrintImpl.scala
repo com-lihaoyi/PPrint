@@ -109,7 +109,8 @@ object TPrintLowPri{
     }
     '{
       new TPrint[T] {
-        final def render: fansi.Str = TPrint.recolor(fansi.Str(${ rec0('cfg)(TypeRepr.of[T]) }))
+        final def render: fansi.Str =
+          TPrint.recolor(fansi.Str(${ rec0('cfg)(TypeRepr.of[T]) }))
       }
     }
   }
