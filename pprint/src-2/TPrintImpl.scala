@@ -90,11 +90,13 @@ object TPrintLowPri{
 
 
     def printArgSyms(args: List[Symbol]): fansi.Str = {
-      def added = args.map{x =>
-        val TypeBounds(lo, hi) = x.info
-        printSym(x
-        ) ++ printBounds(lo, hi)
-      }.reduceLeft[fansi.Str]((l, r) => l ++ ", " ++ r)
+      def added = args
+        .map{x =>
+          val TypeBounds(lo, hi) = x.info
+          printSym(x) ++ printBounds(lo, hi)
+        }
+        .reduceLeft[fansi.Str]((l, r) => l ++ ", " ++ r)
+
       if (args == Nil) fansi.Str("") else fansi.Str("[") ++ added ++ "]"
     }
     def printArgs(args: List[Type]): fansi.Str = {
