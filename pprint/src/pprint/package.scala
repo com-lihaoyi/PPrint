@@ -6,6 +6,6 @@
   */
 package object pprint extends PPrinter{
   def tprint[T: TPrint](implicit config: TPrintColors) = {
-    implicitly[TPrint[T]].render(config)
+    implicitly[TPrint[T]].render
   }
 }

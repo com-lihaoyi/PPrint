@@ -1,4 +1,4 @@
-package pprint
+package test.pprint
 
 import pprint.TPrint
 import utest._
@@ -11,15 +11,15 @@ object TPrintTests extends TestSuite{
     //
     type X = scala.Int with scala.Predef.String{}
     val x = ""
-    test("plain"){
-      def checkVal[T](expected: String, expr: => T)(implicit tprint: TPrint[T]) = {
-        check[T](expected)(tprint)
-      }
+    def checkVal[T](expected: String, expr: => T)(implicit tprint: TPrint[T]) = {
+      check[T](expected)(tprint)
+    }
 
-      def check[T](expected: String*)(implicit tprint: TPrint[T]) = {
-        val tprinted = tprint.render
-        assert(expected.contains(tprinted))
-      }
+    def check[T](expected: String*)(implicit tprint: TPrint[T]) = {
+      val tprinted = tprint.render.render
+      assert(expected.contains(tprinted))
+    }
+    test("plain"){
       test("simple"){
         check[X]("X")
         check[String]("String")
@@ -139,25 +139,11 @@ object TPrintTests extends TestSuite{
       }
       test("annotated"){
         // Can't use the normal implicit method, because of SI-8079
-        assert(TPrint.default[M@deprecated].render == "M @deprecated")
+        val rendered = TPrint.default[M@deprecated].render
+        assert(rendered.toString() == "M @deprecated")
       }
 
       class Custom
-      test("custom"){
-        // Maybe we want to add some extra decoration
-        implicit def customTPrint: TPrint[Custom] = TPrint.lambda(cfg => "+++Custom+++")
-        check[Custom]("+++Custom+++")
-        check[List[Custom]]("List[+++Custom+++]")
-
-        // Or make it look like F#
-        implicit def StreamTPrint[T: TPrint]: TPrint[Stream[T]] = TPrint.lambda(
-          c => implicitly[TPrint[T]].render(c) + " Stream"
-        )
-        check[Stream[Int]]("Int Stream")
-
-        // Note how it works recursively
-        check[Stream[Custom]]("+++Custom+++ Stream")
-      }
 
       test("complex"){
         class A
@@ -166,8 +152,7 @@ object TPrintTests extends TestSuite{
         }
         check[(A with B)#C]("(A with B)#C")
         check[({type T = Int})#T]("Int")
-        implicit def customTPrint: TPrint[Custom] = TPrint.lambda(cfg => "+++Custom+++")
-        check[(Custom with B)#C]("(+++Custom+++ with B)#C")
+        check[(Custom with B)#C]("(Custom with B)#C")
 
       }
       test("higherKinded"){
@@ -175,9 +160,9 @@ object TPrintTests extends TestSuite{
         check[C[List]]("C[List]")
       }
       test("byName"){
-        check[(=> Int) => Double]("Function1[=> Int, Double]")
+        check[(=> Int) => Double]("(=> Int) => Double")
         check[(=> Int, String, => (=> Char) => Float) => Double](
-          "Function3[=> Int, String, => Function1[=> Char, Float], Double]"
+          "(=> Int, String, => (=> Char) => Float) => Double"
         )
       }
       test("range"){
@@ -190,7 +175,7 @@ object TPrintTests extends TestSuite{
     test("colored"){
       import pprint.TPrintColors.Colors._
       def checkColor[T](expected: String)(implicit tprint: TPrint[T]) = {
-        val tprinted = tprint.render.replace(
+        val tprinted = tprint.render.toString.replace(
           fansi.Color.Green.escape, "<"
         ).replace(
           fansi.Color.Reset.escape, ">"
@@ -214,6 +199,41 @@ object TPrintTests extends TestSuite{
           "}"
       )
     }
-  }
 
+    test("functionGrouping"){
+      test("simple")(
+        check[(Int => Option[Int]) => Int]("(Int => Option[Int]) => Int")
+      )
+      test("lazy")(
+        check[() => (Int => Option[Int])]("() => Int => Option[Int]")
+      )
+      test("complex")(
+        check[
+          (Int => Option[Int]) =>
+            ((Int => String) => Int) =>
+              (Int => Int)
+        ]("(Int => Option[Int]) => ((Int => String) => Int) => Int => Int")
+      )
+    }
+    test("wildcards"){
+      case class MyList[T <: String]()
+      check[MyList[_]]("MyList[_]")
+    }
+    test("weirdImplicits"){
+      trait Lower {
+        implicit def monad[M[_],T](i: T): M[T] = ???
+        implicit def preventNothing[T](i: T): Nothing = ???
+      }
+      object Higher extends Lower{
+        implicit def value[M[_],T](l: M[T]): T = ???
+      }
+      import Higher._
+
+      check[Int]("Int")
+    }
+    test("nothingWithWeirdImport"){
+      import scala.reflect.runtime.universe._
+      check[Nothing]("Nothing")
+    }
+  }
 }

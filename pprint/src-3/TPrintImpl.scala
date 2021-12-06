@@ -7,71 +7,67 @@ trait TPrintLowPri{
 object TPrintLowPri{
 
   import scala.quoted._
-  import sourcecode.Text.generate
 
-
-  extension (expr: Expr[String]) {
-    def +(other: Expr[String])(using Quotes): Expr[String] =
-      '{ $expr + $other }
+  sealed trait WrapType
+  object WrapType{
+    case object NoWrap extends WrapType
+    case object Infix extends WrapType
+    case object Tuple extends WrapType
   }
 
-  extension (exprs: List[Expr[String]]) {
-    def mkStringExpr(sep: String)(using Quotes): Expr[String] =
-      exprs match {
-        case expr :: Nil =>
-          expr
-        case _ =>
-          exprs.reduceLeft { (l, r) => l + Expr(sep) + r }
-      }
-  }
+  val functionTypes = Range.inclusive(0, 22).map(i => s"scala.Function$i").toSet
+  val tupleTypes = Range.inclusive(0, 22).map(i => s"scala.Tuple$i").toSet
 
   def typePrintImpl[T](using Quotes, Type[T]): Expr[TPrint[T]] = {
 
     import quotes.reflect._
     import util._
 
-    def literalColor(cfg: Expr[TPrintColors], s: Expr[fansi.Str]) = {
-      '{ $cfg.typeColor($s).render }
+    def literalColor(s: fansi.Str): fansi.Str = {
+      fansi.Color.Green(s)
     }
 
-    def printSymString(cfg: Expr[TPrintColors], s: String) =
+    def printSymString(s: String) =
       if (s.toString.startsWith("_$")) "_"
       else s.toString.stripSuffix(".type")
 
-    def printBounds(cfg: Expr[TPrintColors])(lo: TypeRepr, hi: TypeRepr) = {
+    def printBounds(lo: TypeRepr, hi: TypeRepr): fansi.Str = {
       val loTree =
-        if (lo =:= TypeRepr.of[Nothing]) None else Some(Expr(" >: ") + rec0(cfg)(lo) )
+        if (lo =:= TypeRepr.of[Nothing]) None else Some(fansi.Str(" >: ") ++ rec(lo) )
       val hiTree =
-        if (hi =:= TypeRepr.of[Any]) None else Some(Expr(" <: ") + rec0(cfg)(hi) )
-      val underscore = Expr("_")
-      loTree.orElse(hiTree).map(underscore + _).getOrElse(underscore)
+        if (hi =:= TypeRepr.of[Any]) None else Some(fansi.Str(" <: ") ++ rec(hi) )
+      val underscore = fansi.Str("_")
+      loTree.orElse(hiTree).map(underscore ++ _).getOrElse(underscore)
     }
 
-    def printSym(cfg: Expr[TPrintColors], s: String): Expr[String] = {
-      val expr = Expr(s)
-      literalColor(cfg, '{ fansi.Str($expr) })
-    }
+    def printSym(s: String): fansi.Str = literalColor(fansi.Str(s))
 
     //TODO: We don't currently use this method
-    def prefixFor(cfg: Expr[TPrintColors])(pre: TypeTree, sym: String): Expr[String] = {
+    def prefixFor(pre: TypeTree, sym: String): fansi.Str = {
       // Depending on what the prefix is, you may use `#`, `.`
       // or even need to wrap the prefix in parentheses
       val sep = pre match {
         case x if x.toString.endsWith(".type") =>
-          rec0(cfg)(pre.tpe) + Expr(".")
+          rec(pre.tpe) ++ "."
       }
-      sep + printSym(cfg, sym)
+      sep ++ printSym(sym)
     }
 
 
-    def printArgs(cfg: Expr[TPrintColors])(args: List[TypeRepr]): Expr[String] = {
-      val added = args.map {
-        case TypeBounds(lo, hi) =>
-          printBounds(cfg)(lo, hi)
-        case tpe: TypeRepr =>
-          rec0(cfg)(tpe, false)
-      }.mkStringExpr(", ")
-      Expr("[") + added + Expr("]")
+    def printArgs(args: List[TypeRepr]): fansi.Str = {
+      fansi.Str("[") ++ printArgs0(args) ++ "]"
+    }
+
+    def printArgs0(args: List[TypeRepr]): fansi.Str = {
+      val added = fansi.Str.join(
+        args.map {
+          case TypeBounds(lo, hi) =>
+            printBounds(lo, hi)
+          case tpe: TypeRepr =>
+            rec(tpe, false)
+        }.flatMap(Seq(_, fansi.Str(", "))).dropRight(1):_*
+      )
+      added
     }
 
 
@@ -85,32 +81,49 @@ object TPrintLowPri{
       }
     }
 
-    def rec0(cfg: Expr[TPrintColors])(tpe: TypeRepr, end: Boolean = false): Expr[String] = tpe match {
+    def rec(tpe: TypeRepr, end: Boolean = false): fansi.Str = rec0(tpe)._1
+    def rec0(tpe: TypeRepr, end: Boolean = false): (fansi.Str, WrapType) = tpe match {
       case TypeRef(NoPrefix(), sym) =>
-        printSym(cfg, sym)
+        (printSym(sym), WrapType.NoWrap)
         // TODO: Add prefix handling back in once it works!
       case TypeRef(_, sym) =>
-        printSym(cfg, sym)
+        (printSym(sym), WrapType.NoWrap)
       case AppliedType(tpe, args) =>
-        printSym(cfg, tpe.typeSymbol.name) + printArgs(cfg)(args)
+        if (functionTypes.contains(tpe.typeSymbol.fullName)) {
+          (
+            if(args.size == 1 ) fansi.Str("() => ") ++ rec(args.last)
+            else{
+              val (left, wrap) = rec0(args(0))
+              if(args.size == 2 && wrap == WrapType.NoWrap){
+                left ++ fansi.Str(" => ") ++ rec(args.last)
+              }
+              else fansi.Str("(") ++ printArgs0(args.dropRight(1)) ++ fansi.Str(") => ") ++ rec(args.last)
+
+            },
+            WrapType.Infix
+          )
+
+        } else if (tupleTypes.contains(tpe.typeSymbol.fullName))
+          (fansi.Str("(") ++ printArgs0(args) ++ fansi.Str(")"), WrapType.Tuple)
+        else (printSym(tpe.typeSymbol.name) ++ printArgs(args), WrapType.NoWrap)
       case RefinedType(tpe, refinements) =>
-        val pre = rec0(cfg)(tpe)
-        lazy val defs = refinements.collect {
-          case (name, tpe: TypeRepr) =>
-            Expr("type " + name + " = ") + rec0(cfg)(tpe)
-          case (name, TypeBounds(lo, hi)) =>
-            Expr("type " + name) + printBounds(cfg)(lo, hi) + rec0(cfg)(tpe)
-        }.mkStringExpr("; ")
-        pre + (if(refinements.isEmpty) '{ "" } else Expr("{") + defs + Expr("}"))
+        val pre = rec(tpe)
+        lazy val defs = fansi.Str.join(
+          refinements.collect {
+            case (name, tpe: TypeRepr) =>
+              fansi.Str("type " + name + " = ") ++ rec(tpe)
+            case (name, TypeBounds(lo, hi)) =>
+              fansi.Str("type " + name) ++ printBounds(lo, hi) ++ rec(tpe)
+          }.flatMap(Seq(_, fansi.Str("; "))).dropRight(1):_*
+        )
+        (pre ++ (if(refinements.isEmpty) fansi.Str("") else fansi.Str("{") ++ defs ++ "}"), WrapType.NoWrap)
       case AnnotatedType(parent, annot) =>
-        rec0(cfg)(parent, end)
+        (rec(parent, end), WrapType.NoWrap)
       case _ =>
-        Expr(Type.show[T])
+        (fansi.Str(Type.show[T]), WrapType.NoWrap)
     }
-    '{
-      new TPrint[T] {
-        final def render(implicit cfg: TPrintColors): String = ${ rec0('cfg)(TypeRepr.of[T]) }
-      }
-    }
+    val value: fansi.Str = rec(TypeRepr.of[T])
+
+    '{TPrint.recolor(fansi.Str(${Expr(value.render)}))}
   }
 }
