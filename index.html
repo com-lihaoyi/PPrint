@@ -57,7 +57,7 @@
 span.hljs-tag, span.hljs-symbol{
     background: none;
 }
-    </style><title>PPrint</title><script src="scripts.js"></script></head><body><div>
+    </style><title>PPrint 0.7.0</title><script src="scripts.js"></script></head><body><div>
 <a href="https://github.com/lihaoyi/pprint"><img style="position: absolute;top: 0px;right: 0px;border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" /></a>
 
 
@@ -71,7 +71,7 @@ span.hljs-tag, span.hljs-symbol{
   ga('send', 'pageview');
 
 </script>
-<div style="margin: 0px;color: #333;text-align: center;padding: 2.5em 2em 0;border-bottom: 1px solid #eee;display: block;" id="PPrint" class=" scalatex-site-Styles-hoverContainer scalatex-site-Styles-headerTag"><h1 style="margin: 0.2em 0;font-size: 3em;font-weight: 300;">PPrint<a class=" scalatex-site-Styles-headerLink" href="#PPrint" style="position: absolute;right: 0px;"><i class="fa fa-link"></i></a></h1><br /></div><div class=" scalatex-site-Styles-content">
+<div style="margin: 0px;color: #333;text-align: center;padding: 2.5em 2em 0;border-bottom: 1px solid #eee;display: block;" id="PPrint0.7.0" class=" scalatex-site-Styles-hoverContainer scalatex-site-Styles-headerTag"><h1 style="margin: 0.2em 0;font-size: 3em;font-weight: 300;">PPrint 0.7.0<a class=" scalatex-site-Styles-headerLink" href="#PPrint0.7.0" style="position: absolute;right: 0px;"><i class="fa fa-link"></i></a></h1><br /></div><div class=" scalatex-site-Styles-content">
   <img src="Example.png" alt="Example use case of PPrint" style="height: 767px;margin-left: auto;margin-right: auto;display: block;" />
   <p>
     PPrint is a module that lets you easily print data structures in a form that is more convenient to use both visually and programmatically. Unlike a traditional <code class="scala scalatex-site-Styles-highlightMe" style="display: inline;padding: 0px;margin: 0px;">.toString</code>, PPrint...
@@ -96,11 +96,15 @@ span.hljs-tag, span.hljs-symbol{
 </p>
   <div style="margin: 0px;color: #333;text-align: center;padding: 2.5em 2em 0;border-bottom: 1px solid #eee;display: block;" id="GettingStarted" class=" scalatex-site-Styles-hoverContainer scalatex-site-Styles-headerTag"><h1 style="margin: 0.2em 0;font-size: 3em;font-weight: 300;">Getting Started<a class=" scalatex-site-Styles-headerLink" href="#GettingStarted" style="position: absolute;right: 0px;"><i class="fa fa-link"></i></a></h1><br /></div>
     <p>
-      Add the following to your SBT config:</p>
-    <pre><code class="scala scalatex-site-Styles-highlightMe">libraryDependencies += &quot;com.lihaoyi&quot; %% &quot;pprint&quot; % &quot;0.5.6&quot;</code></pre>
-    <p>
-      Or for Scala.js/Scala-Native:</p>
-    <pre><code class="scala scalatex-site-Styles-highlightMe">libraryDependencies += &quot;com.lihaoyi&quot; %%% &quot;pprint&quot; % &quot;0.5.6&quot;</code></pre>
+      Add the following to your build config:</p>
+    <pre><code class="scala scalatex-site-Styles-highlightMe">// SBT
+libraryDependencies += &quot;com.lihaoyi&quot; %% &quot;pprint&quot; % &quot;0.7.0&quot;
+libraryDependencies += &quot;com.lihaoyi&quot; %%% &quot;pprint&quot; % &quot;0.7.0&quot; // Scala.js/Native
+
+// Mill
+ivy&quot;com.lihaoyi::pprint:0.7.0&quot;
+ivy&quot;com.lihaoyi::pprint::0.7.0&quot; // Scala.js/Native
+</code></pre>
     <p>
       The above example then showed how to use the default pprint configuration. You can also set up your own custom implicit `pprint.Config` if you want to control e.g. colors, width, or max-height of the output.</p>
     <p>
@@ -271,6 +275,21 @@ scala&gt; pprint2.pprintln(Math.PI)
 </p>
     <img src="TPrintCustom.png" alt="Example use case of Custom TPrint" style="height: 359px;margin-left: auto;margin-right: auto;display: block;" />
   <div style="margin: 0px;color: #333;text-align: center;padding: 2.5em 2em 0;border-bottom: 1px solid #eee;display: block;" id="VersionHistory" class=" scalatex-site-Styles-hoverContainer scalatex-site-Styles-headerTag"><h1 style="margin: 0.2em 0;font-size: 3em;font-weight: 300;">Version History<a class=" scalatex-site-Styles-headerLink" href="#VersionHistory" style="position: absolute;right: 0px;"><i class="fa fa-link"></i></a></h1><br /></div>
+    <h1 id="0.7.0" style="display: block;" class=" scalatex-site-Styles-hoverContainer scalatex-site-Styles-headerTag"><a class=" scalatex-site-Styles-headerLink" href="#0.7.0" style="position: absolute;right: 0px;"><i class="fa fa-link"></i></a>0.7.0</h1>
+      <ul>
+        <li>
+          Overhaul and simplify TPrint implementation <a href="https://github.com/com-lihaoyi/PPrint/pull/72">#72</a></li>
+        <li>
+          Fix PPrint for Product2 <a href="https://github.com/com-lihaoyi/PPrint/pull/36">#36</a></li>
+        <li>
+          Make PPrint robust against <code>toString</code> returning <code>null</code> <a href="https://github.com/com-lihaoyi/PPrint/pull/70">#70</a></li>
+        <li>
+          Add flag to control unicode escaping <a href="https://github.com/com-lihaoyi/PPrint/pull/71">#71</a></li></ul>
+    <h1 id="0.6.0" style="display: block;" class=" scalatex-site-Styles-hoverContainer scalatex-site-Styles-headerTag"><a class=" scalatex-site-Styles-headerLink" href="#0.6.0" style="position: absolute;right: 0px;"><i class="fa fa-link"></i></a>0.6.0</h1>
+      <ul>
+        <li>
+          Add support for field names when printing case classes in Scala 2.13
+</li></ul>
     <h1 id="0.5.6" style="display: block;" class=" scalatex-site-Styles-hoverContainer scalatex-site-Styles-headerTag"><a class=" scalatex-site-Styles-headerLink" href="#0.5.6" style="position: absolute;right: 0px;"><i class="fa fa-link"></i></a>0.5.6</h1>
       <ul>
         <li>
@@ -403,7 +422,7 @@ scala&gt; pprint2.pprintln(Math.PI)
           Shared case-class implicit-derivation back-end with uPickle, greatly expanding the scope of things that can be prettyprinted</li></ul></div>
 </div><script>
     scalatex.scrollspy.Controller().main(
-      [{"value":"PPrint","children":[{"value":"Getting Started","children":[]},{"value":"Streaming","children":[]},{"value":"Customization","children":[]},{"value":"TPrint","children":[]},{"value":"Version History","children":[{"value":"0.5.6","children":[]},{"value":"0.5.5","children":[]},{"value":"0.5.3","children":[]},{"value":"0.5.2","children":[]},{"value":"0.5.1","children":[]},{"value":"0.5.0","children":[]},{"value":"0.4.3","children":[]},{"value":"0.4.2","children":[]},{"value":"0.4.1","children":[]},{"value":"0.4.0","children":[]},{"value":"0.3.9","children":[]},{"value":"0.3.8","children":[]},{"value":"0.3.7","children":[]},{"value":"0.3.6","children":[]},{"value":"0.3.5","children":[]},{"value":"0.3.4","children":[]},{"value":"0.3.3","children":[]},{"value":"0.3.2","children":[]},{"value":"0.3.1","children":[]},{"value":"0.3.0","children":[]}]}]}]
+      [{"value":"PPrint 0.7.0","children":[{"value":"Getting Started","children":[]},{"value":"Streaming","children":[]},{"value":"Customization","children":[]},{"value":"TPrint","children":[]},{"value":"Version History","children":[{"value":"0.7.0","children":[]},{"value":"0.6.0","children":[]},{"value":"0.5.6","children":[]},{"value":"0.5.5","children":[]},{"value":"0.5.3","children":[]},{"value":"0.5.2","children":[]},{"value":"0.5.1","children":[]},{"value":"0.5.0","children":[]},{"value":"0.4.3","children":[]},{"value":"0.4.2","children":[]},{"value":"0.4.1","children":[]},{"value":"0.4.0","children":[]},{"value":"0.3.9","children":[]},{"value":"0.3.8","children":[]},{"value":"0.3.7","children":[]},{"value":"0.3.6","children":[]},{"value":"0.3.5","children":[]},{"value":"0.3.4","children":[]},{"value":"0.3.3","children":[]},{"value":"0.3.2","children":[]},{"value":"0.3.1","children":[]},{"value":"0.3.0","children":[]}]}]}]
   )</script><script>
     ['DOMContentLoaded', 'load'].forEach(function(ev){
       addEventListener(ev, function(){
@@ -413,4 +432,4 @@ scala&gt; pprint2.pprintln(Math.PI)
         );
       })
     })
-  </script></body></html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+  </script></body></html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
