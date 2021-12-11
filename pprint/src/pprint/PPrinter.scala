@@ -58,7 +58,7 @@ case class PPrinter(defaultWidth: Int = 100,
         indent,
         escapeUnicode = escapeUnicode,
         showFieldNames = showFieldNames
-      ).toSeq:_*
+      ).toSeq
     )
 
     println(str)
@@ -84,7 +84,7 @@ case class PPrinter(defaultWidth: Int = 100,
         initialOffset,
         escapeUnicode = escapeUnicode,
         showFieldNames = showFieldNames
-      ).toSeq:_*
+      ).toSeq
     )
   }
 

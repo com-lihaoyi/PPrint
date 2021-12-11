@@ -23,7 +23,7 @@
   ga('send', 'pageview');
 
 
-@sect{PPrint}
+@sect{PPrint 0.7.0}
   @img(
     src := "Example.png",
     alt := "Example use case of PPrint",
@@ -55,13 +55,16 @@
 
   @sect{Getting Started}
     @p
-      Add the following to your SBT config:
+      Add the following to your build config:
     @hl.scala
+      // SBT
       libraryDependencies += "com.lihaoyi" %% "pprint" % "@pprint.Constants.version"
-    @p
-      Or for Scala.js/Scala-Native:
-    @hl.scala
-      libraryDependencies += "com.lihaoyi" %%% "pprint" % "@pprint.Constants.version"
+      libraryDependencies += "com.lihaoyi" %%% "pprint" % "@pprint.Constants.version" // Scala.js/Native
+
+      // Mill
+      ivy"com.lihaoyi::pprint:@pprint.Constants.version"
+      ivy"com.lihaoyi::pprint::@pprint.Constants.version" // Scala.js/Native
+
     @p
       The above example then showed how to use the default pprint configuration. You can also set up your own custom implicit `pprint.Config` if you want to control e.g. colors, width, or max-height of the output.
     @p
@@ -255,6 +258,16 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.7.0}
+      @ul
+        @li
+          Overhaul and simplify TPrint implementation @lnk("#72", "https://github.com/com-lihaoyi/PPrint/pull/72")
+        @li
+          Fix PPrint for Product2 @lnk("#36", "https://github.com/com-lihaoyi/PPrint/pull/36")
+        @li
+          Make PPrint robust against @code{toString} returning @code{null} @lnk("#70", "https://github.com/com-lihaoyi/PPrint/pull/70")
+        @li
+          Add flag to control unicode escaping @lnk("#71", "https://github.com/com-lihaoyi/PPrint/pull/71")
     @sect{0.6.0}
       @ul
         @li

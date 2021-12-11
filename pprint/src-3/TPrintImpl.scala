@@ -65,7 +65,8 @@ object TPrintLowPri{
             printBounds(lo, hi)
           case tpe: TypeRepr =>
             rec(tpe, false)
-        }.flatMap(Seq(_, fansi.Str(", "))).dropRight(1):_*
+        },
+        sep = ", "
       )
       added
     }
@@ -114,7 +115,8 @@ object TPrintLowPri{
               fansi.Str("type " + name + " = ") ++ rec(tpe)
             case (name, TypeBounds(lo, hi)) =>
               fansi.Str("type " + name) ++ printBounds(lo, hi) ++ rec(tpe)
-          }.flatMap(Seq(_, fansi.Str("; "))).dropRight(1):_*
+          },
+          sep = "; "
         )
         (pre ++ (if(refinements.isEmpty) fansi.Str("") else fansi.Str("{") ++ defs ++ "}"), WrapType.NoWrap)
       case AnnotatedType(parent, annot) =>

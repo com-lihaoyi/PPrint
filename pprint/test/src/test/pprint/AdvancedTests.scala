@@ -208,6 +208,15 @@ object AdvancedTests extends TestSuite{
       assert(rendered.plainText == "null")
 
     }
+    test("XXX"){
+      final class Vec2 (val x: Double, val y: Double) extends Product2[Double, Double] {
+        def _1 = x
+        def _2 = y
+        def canEqual(that: Any) = that.isInstanceOf[Vec2]
+      }
+      val rendered = Check.color(new Vec2(13, 37))
+      rendered
+    }
   }
 
 

@@ -17,7 +17,7 @@ class Check(width: Int = 100, height: Int = 99999, renderTwice: Boolean = false,
       else Seq(blackWhite, color)
     // Make sure we
     for (pprinter <- printers){
-      val pprinted = fansi.Str.join(blackWhite.tokenize(t, width, height).toStream:_*).plainText
+      val pprinted = fansi.Str.join(blackWhite.tokenize(t, width, height).toStream).plainText
 
       utest.assert(expected.map(_.trim).contains(pprinted))
     }
