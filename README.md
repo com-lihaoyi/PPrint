@@ -1,4 +1,4 @@
-PPrint [![Gitter Chat][gitter-badge]][gitter-link] [![Build Status][travis-badge]][travis-link]
+PPrint [![Gitter Chat][gitter-badge]][gitter-link]
 ===============================================================================================
 
 [travis-badge]: https://travis-ci.org/lihaoyi/PPrint.svg

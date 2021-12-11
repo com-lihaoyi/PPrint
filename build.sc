@@ -45,7 +45,7 @@ trait PPrintModule extends PublishModule with Mima {
 trait PPrintMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::fansi::0.2.14",
+    ivy"com.lihaoyi::fansi::0.3.0",
     ivy"com.lihaoyi::sourcecode::0.2.7"
   )
   def compileIvyDeps =

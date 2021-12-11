@@ -178,8 +178,9 @@ object TPrintLowPri{
             }else (
               fansi.Str("(") ++
               fansi.Str.join(
-                (left +: many.init.tail.map(typePrintImplRec(c)(_, true)))
-                  .flatMap(Seq(_, fansi.Str(", "))).init:_*
+                (left +: many.init.tail.map(typePrintImplRec(c)(_, true))),
+                sep = ", "
+
               ) ++
               ") => " ++ typePrintImplRec(c)(many.last, true),
               WrapType.Infix
@@ -188,7 +189,7 @@ object TPrintLowPri{
       case TypeRef(pre, sym, args) if tupleTypes.contains(sym.fullName) =>
         (
           fansi.Str("(") ++
-          fansi.Str.join(args.map(typePrintImplRec(c)(_, true)).flatMap(Seq(_, fansi.Str(", "))).init:_*) ++
+          fansi.Str.join(args.map(typePrintImplRec(c)(_, true)), sep = ", ") ++
           ")",
           WrapType.Tuple
         )
