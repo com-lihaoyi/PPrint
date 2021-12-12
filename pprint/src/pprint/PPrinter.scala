@@ -1,5 +1,7 @@
 package pprint
 
+import java.io.PrintStream
+
 /**
   *
   * @param defaultWidth How wide to allow a pretty-printed value to become
@@ -36,7 +38,38 @@ case class PPrinter(defaultWidth: Int = 100,
              showFieldNames: Boolean = defaultShowFieldNames)
             (implicit line: sourcecode.Line,
              fileName: sourcecode.FileName): T = {
+    doLog(x, tag, width, height, indent, escapeUnicode, showFieldNames, Console.out)(line, fileName)
+  }
 
+  object err {
+    /**
+      * Logs a given value to stderr with some metadata to identify where the log
+      * message came from. Hard-coded and not very flexible, but you can easily
+      * implement your own log method if you want to customize it further.
+      */
+    def log[T](x: sourcecode.Text[T],
+               tag: String = "",
+               width: Int = defaultWidth,
+               height: Int = defaultHeight,
+               indent: Int = defaultIndent,
+               escapeUnicode: Boolean = defaultEscapeUnicode,
+               showFieldNames: Boolean = defaultShowFieldNames)
+              (implicit line: sourcecode.Line,
+               fileName: sourcecode.FileName): T = {
+      doLog(x, tag, width, height, indent, escapeUnicode, showFieldNames, Console.err)(line, fileName)
+    }
+  }
+
+  private def doLog[T](x: sourcecode.Text[T],
+                       tag: String,
+                       width: Int,
+                       height: Int,
+                       indent: Int,
+                       escapeUnicode: Boolean,
+                       showFieldNames: Boolean,
+                       out: PrintStream)
+                      (implicit line: sourcecode.Line,
+                       fileName: sourcecode.FileName): T = {
     val tagStrs =
       if (tag.isEmpty) Seq()
       else Seq(fansi.Color.Cyan(tag), fansi.Str(" "))
@@ -61,7 +94,7 @@ case class PPrinter(defaultWidth: Int = 100,
       ).toSeq
     )
 
-    println(str)
+    out.println(str)
     x.value
   }
 
