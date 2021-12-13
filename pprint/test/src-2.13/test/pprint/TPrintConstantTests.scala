@@ -1,3 +1,5 @@
+package test.pprint
+
 import pprint.{TPrint, TPrintColors}
 import utest._
 
