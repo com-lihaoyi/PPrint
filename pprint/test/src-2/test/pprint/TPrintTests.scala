@@ -1,6 +1,6 @@
 package test.pprint
 
-import pprint.TPrint
+import pprint.{TPrint, TPrintColors}
 import utest._
 
 object TPrintTests extends TestSuite{
@@ -237,3 +237,4 @@ object TPrintTests extends TestSuite{
     }
   }
 }
+

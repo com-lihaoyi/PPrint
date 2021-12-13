@@ -51,12 +51,14 @@ abstract class Walker{
     x match{
 
       case null => Tree.Literal("null")
+      case x: Boolean => Tree.Literal(x.toString)
       case x: Char =>
         val sb = new StringBuilder
         sb.append('\'')
         Util.escapeChar(x, sb, escapeUnicode)
         sb.append('\'')
         Tree.Literal(sb.toString)
+
       case x: Byte => Tree.Literal(x.toString)
       case x: Short => Tree.Literal(x.toString)
       case x: Int => Tree.Literal(x.toString)
