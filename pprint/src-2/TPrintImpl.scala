@@ -222,7 +222,10 @@ object TPrintLowPri{
             .reduceLeft[fansi.Str]((l, r) => l  ++ " with " ++ r)
         (pre + (if (defs.isEmpty) "" else "{" ++ defs.mkString(";") ++ "}"), WrapType.NoWrap)
       case ConstantType(value) =>
-        (value.toString, WrapType.NoWrap)
+        val pprintedValue =
+          pprint.PPrinter.BlackWhite.copy(colorLiteral = fansi.Color.Green).apply(value.value)
+
+        (pprintedValue, WrapType.NoWrap)
     }
   }
 

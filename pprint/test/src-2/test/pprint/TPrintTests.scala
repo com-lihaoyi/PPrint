@@ -1,6 +1,6 @@
 package test.pprint
 
-import pprint.TPrint
+import pprint.{TPrint, TPrintColors}
 import utest._
 
 object TPrintTests extends TestSuite{
@@ -235,5 +235,16 @@ object TPrintTests extends TestSuite{
       import scala.reflect.runtime.universe._
       check[Nothing]("Nothing")
     }
+    test("constant"){
+      check[123]("123")
+      check["xyz"]("\"xyz\"")
+      check[Seq[true]]("Seq[true]")
+      assert(
+        implicitly[TPrint[123]].render(TPrintColors.Colors) == fansi.Color.Green("123"),
+        implicitly[TPrint["xyz"]].render(TPrintColors.Colors)  == fansi.Color.Green("\"xyz\""),
+        implicitly[TPrint[Seq[true]]].render(TPrintColors.Colors)  == fansi.Color.Green("Seq") ++ "[" ++ fansi.Color.Green("true") ++ "]"
+      )
+    }
   }
 }
+

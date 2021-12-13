@@ -208,7 +208,7 @@ object AdvancedTests extends TestSuite{
       assert(rendered.plainText == "null")
 
     }
-    test("XXX"){
+    test("customProduct2"){
       final class Vec2 (val x: Double, val y: Double) extends Product2[Double, Double] {
         def _1 = x
         def _2 = y
