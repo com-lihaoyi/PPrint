@@ -23,7 +23,7 @@
   ga('send', 'pageview');
 
 
-@sect{PPrint 0.7.0}
+@sect{PPrint @pprint.Constants.version}
   @img(
     src := "Example.png",
     alt := "Example use case of PPrint",
@@ -258,6 +258,10 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.7.1}
+      @ul
+        @li
+          Fixes for pprinting and tprinting literal constants @lnk("#75", "https://github.com/com-lihaoyi/PPrint/pull/75")
     @sect{0.7.0}
       @ul
         @li
