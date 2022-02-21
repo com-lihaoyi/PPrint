@@ -235,6 +235,20 @@ object TPrintTests extends TestSuite{
       import scala.reflect.runtime.universe._
       check[Nothing]("Nothing")
     }
+    test("polytype"){
+      import scala.language.implicitConversions
+      type Foo[+A] = Unit
+      trait Bar[F[_], A]
+      object Bar {
+        implicit def anyToBar[A](a: A): Bar[Foo, A] = new Bar[Foo, A] {}
+        def apply[F[_], A](b: Bar[F, A]): Bar[F, A] = b
+      }
+      object Print {
+        def tprint[A](a: A)(implicit t: pprint.TPrint[A]) = t.render
+      }
+      val rendered = Print.tprint(Bar(1))
+      assert(rendered.toString() == "Bar[Foo[A], Int]")
+    }
   }
 }
 
