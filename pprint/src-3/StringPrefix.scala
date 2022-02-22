@@ -1,7 +1,6 @@
 package pprint
 
-import reflect.Selectable.reflectiveSelectable
-
 object StringPrefix{
-  def apply(i: Iterable[_]) = i.asInstanceOf[{ def collectionClassName: String }].collectionClassName
+  def apply(i: Iterable[_]) =
+    scala.collection.internal.pprint.CollectionName.get(i)
 }
