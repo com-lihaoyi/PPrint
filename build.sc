@@ -19,7 +19,7 @@ val scalaJSVersions = for {
 
 val scalaNativeVersions = for {
   scalaV <- scala31 :: scala2VersionsAndDotty
-  scalaNativeV <- Seq("0.4.3")
+  scalaNativeV <- Seq("0.4.4")
 } yield (scalaV, scalaNativeV)
 
 trait PPrintModule extends PublishModule with Mima {
