@@ -1,5 +1,5 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
-import $ivy.`com.lihaoyi::mill-contrib-bloop:`
+import mill.scalalib.api.Util.isScala3
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import $ivy.`com.github.lolgab::mill-mima::0.0.9`
@@ -112,6 +112,8 @@ object pprint extends Module {
     extends PPrintMainModule with ScalaNativeModule with PPrintModule {
     def offset = os.up
     def scalaNativeVersion = crossScalaNativeVersion
+    // Remove after Scala Native Scala 3 artifacts are published
+    def mimaPreviousArtifacts = T{ if(isScala3(scalaVersion())) Seq() else super.mimaPreviousArtifacts() }
     object test extends Tests with PPrintTestModule{
       def offset = os.up
       val crossScalaVersion = NativePPrintModule.this.crossScalaVersion
