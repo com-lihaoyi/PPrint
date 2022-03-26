@@ -247,7 +247,7 @@ object TPrintTests extends TestSuite{
         def tprint[A](a: A)(implicit t: pprint.TPrint[A]) = t.render
       }
       val rendered = Print.tprint(Bar(1))
-      assert(rendered.toString() == "Bar[Foo[A], Int]")
+      assert(rendered.toString() == "Bar[[A]Foo[A], Int]")
     }
   }
 }
