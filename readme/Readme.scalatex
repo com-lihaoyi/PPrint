@@ -258,6 +258,14 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.7.3}
+      @ul
+        @li
+          Add support for Polytypes @lnk("#79", "https://github.com/com-lihaoyi/PPrint/pull/79")
+    @sect{0.7.2}
+      @ul
+        @li
+          Support Scala Native on Scala 3 @lnk("#75", "https://github.com/com-lihaoyi/PPrint/pull/77")
     @sect{0.7.1}
       @ul
         @li
