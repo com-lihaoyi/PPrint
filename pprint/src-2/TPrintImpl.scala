@@ -221,6 +221,12 @@ object TPrintLowPri{
             .map(typePrintImplRec(c)(_, true))
             .reduceLeft[fansi.Str]((l, r) => l  ++ " with " ++ r)
         (pre + (if (defs.isEmpty) "" else "{" ++ defs.mkString(";") ++ "}"), WrapType.NoWrap)
+      case PolyType(typeParams, resultType) =>
+        val params = printArgSyms(typeParams)
+        (
+          params ++ typePrintImplRec(c)(resultType, true),
+          WrapType.NoWrap
+        )
       case ConstantType(value) =>
         val pprintedValue =
           pprint.PPrinter.BlackWhite.copy(colorLiteral = fansi.Color.Green).apply(value.value)
