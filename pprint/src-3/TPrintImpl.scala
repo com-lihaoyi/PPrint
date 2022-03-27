@@ -28,8 +28,8 @@ object TPrintLowPri{
     }
 
     def printSymString(s: String) =
-      if (s.toString.startsWith("_$")) "_"
-      else s.toString.stripSuffix(".type")
+      if (s.startsWith("_$")) "_"
+      else s.stripSuffix(".type")
 
     def printBounds(lo: TypeRepr, hi: TypeRepr): fansi.Str = {
       val loTree =
