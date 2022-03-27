@@ -246,8 +246,10 @@ object TPrintTests extends TestSuite{
       object Print {
         def tprint[A](a: A)(implicit t: pprint.TPrint[A]) = t.render
       }
-      val rendered = Print.tprint(Bar(1))
-      assert(rendered.toString() == "Bar[[A]Foo[A], Int]")
+      val rendered = Print.tprint(Bar(1)).toString()
+
+      val is213Plus = classOf[Seq[Int]].getName != "scala.collection.Seq"
+      assert(rendered == (if (is213Plus) "Bar[[A]Foo[A], Int]" else "Bar[Foo, Int]"))
     }
   }
 }
