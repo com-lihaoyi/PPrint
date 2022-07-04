@@ -15,7 +15,20 @@ val scalaJSVersions = scalaVersions.map((_, "1.10.1"))
 val scalaNativeVersions = scalaVersions.map((_, "0.4.5"))
 
 trait MimaCheck extends Mima {
+  def crossScalaVersion: String
+
   def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
+
+  // By default in sbt-mima IncompatibleSignatureProblem is actually turned off
+  // by default due to false positives. We hit on this with 2.13 > 2.13.6 with
+  // * static method apply(scala.collection.Iterable)java.lang.String in class pprint.StringPrefix has a different generic signature in current version, where it is (Lscala/collection/Iterable<Ljava/lang/Object;>;)Ljava/lang/String; rather than (Lscala/collection/Iterable<*>;)Ljava/lang/String;. See https://github.com/lightbend/mima#incompatiblesignatureproblem
+  def mimaBinaryIssueFilters = if (crossScalaVersion.startsWith("2.13"))  {
+    super.mimaBinaryIssueFilters() ++ Seq(
+      ProblemFilter.exclude[IncompatibleSignatureProblem]("pprint.StringPrefix.apply")
+    )
+  } else {
+    super.mimaBinaryIssueFilters()
+  }
 }
 
 trait PPrintModule extends PublishModule with MimaCheck {
@@ -100,6 +113,7 @@ object pprint extends Module {
   object js extends Cross[JsPPrintModule](scalaJSVersions:_*)
   class JsPPrintModule(val crossScalaVersion: String, crossJSVersion: String)
     extends PPrintMainModule with ScalaJSModule with PPrintModule {
+
     def offset = os.up
     def scalaJSVersion = crossJSVersion
     object test extends Tests with PPrintTestModule{
@@ -113,8 +127,6 @@ object pprint extends Module {
     extends PPrintMainModule with ScalaNativeModule with PPrintModule {
     def offset = os.up
     def scalaNativeVersion = crossScalaNativeVersion
-    // Remove after Scala Native Scala 3 artifacts are published
-    //def mimaPreviousArtifacts = T{ if(isScala3(scalaVersion())) Seq() else super.mimaPreviousArtifacts() }
     object test extends Tests with PPrintTestModule{
       def offset = os.up
       val crossScalaVersion = NativePPrintModule.this.crossScalaVersion
