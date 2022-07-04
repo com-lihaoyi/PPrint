@@ -2,37 +2,38 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 import mill.scalalib.api.Util.isScala3
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-import $ivy.`com.github.lolgab::mill-mima::0.0.9`
+import $ivy.`com.github.lolgab::mill-mima::0.0.10`
 import com.github.lolgab.mill.mima._
+import mill.scalalib.api.Util.isScala3
 
-val dottyVersions = sys.props.get("dottyVersion").toList
+val dottyCommunityBuildVersion = sys.props.get("dottyVersion").toList
 
-val scala2VersionsAndDotty = "2.12.13" :: "2.13.4" :: "2.11.12" :: dottyVersions
-val scala30 = "3.0.2"
-val scala31 = "3.1.1"
+val scalaVersions =
+  "2.12.16" :: "2.13.8" :: "2.11.12" :: "3.1.3" :: dottyCommunityBuildVersion
 
-val scalaJSVersions = for {
-  scalaV <- scala30 :: scala2VersionsAndDotty
-  scalaJSV <- Seq("0.6.33", "1.5.1")
-  if scalaV.startsWith("2.") || scalaJSV.startsWith("1.")
-} yield (scalaV, scalaJSV)
+val scalaJSVersions = scalaVersions.map((_, "1.10.1"))
+val scalaNativeVersions = scalaVersions.map((_, "0.4.5"))
 
-val scalaNativeVersions = for {
-  scalaV <- scala31 :: scala2VersionsAndDotty
-  scalaNativeV <- Seq("0.4.4")
-} yield (scalaV, scalaNativeV)
+trait MimaCheck extends Mima {
+  def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
+}
 
-trait PPrintModule extends PublishModule with Mima {
+trait PPrintModule extends PublishModule with MimaCheck {
   def artifactName = "pprint"
 
   def publishVersion = VcsVersion.vcsState().format()
 
-  def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
+  def crossScalaVersion: String
+
+  // Temporary until the next version of Mima gets released with
+  // https://github.com/lightbend/mima/issues/693 included in the release.
+  def mimaPreviousArtifacts =
+    if(isScala3(crossScalaVersion)) Agg.empty[Dep] else super.mimaPreviousArtifacts()
 
   def pomSettings = PomSettings(
     description = artifactName(),
     organization = "com.lihaoyi",
-    url = "https://github.com/lihaoyi/PPrint",
+    url = "https://github.com/com-lihaoyi/PPrint",
     licenses = Seq(License.MIT),
     versionControl = VersionControl.github(
       owner = "com-lihaoyi",
@@ -88,7 +89,7 @@ trait PPrintTestModule extends ScalaModule with TestModule.Utest {
 }
 
 object pprint extends Module {
-  object jvm extends Cross[JvmPPrintModule](scala30 :: scala2VersionsAndDotty:_*)
+  object jvm extends Cross[JvmPPrintModule](scalaVersions:_*)
   class JvmPPrintModule(val crossScalaVersion: String)
     extends PPrintMainModule with ScalaModule with PPrintModule {
     object test extends Tests with PPrintTestModule{
@@ -113,7 +114,7 @@ object pprint extends Module {
     def offset = os.up
     def scalaNativeVersion = crossScalaNativeVersion
     // Remove after Scala Native Scala 3 artifacts are published
-    def mimaPreviousArtifacts = T{ if(isScala3(scalaVersion())) Seq() else super.mimaPreviousArtifacts() }
+    //def mimaPreviousArtifacts = T{ if(isScala3(scalaVersion())) Seq() else super.mimaPreviousArtifacts() }
     object test extends Tests with PPrintTestModule{
       def offset = os.up
       val crossScalaVersion = NativePPrintModule.this.crossScalaVersion
