@@ -2,9 +2,8 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 import mill.scalalib.api.Util.isScala3
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-import $ivy.`com.github.lolgab::mill-mima::0.0.10`
+import $ivy.`com.github.lolgab::mill-mima::0.0.11`
 import com.github.lolgab.mill.mima._
-import mill.scalalib.api.Util.isScala3
 
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion").toList
 
@@ -14,27 +13,12 @@ val scalaVersions =
 val scalaJSVersions = scalaVersions.map((_, "1.10.1"))
 val scalaNativeVersions = scalaVersions.map((_, "0.4.5"))
 
-trait MimaCheck extends Mima {
-  def crossScalaVersion: String
-
-  def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
-
-  // By default in sbt-mima IncompatibleSignatureProblem is actually turned off
-  // by default due to false positives. We hit on this with 2.13 > 2.13.6 with
-  // * static method apply(scala.collection.Iterable)java.lang.String in class pprint.StringPrefix has a different generic signature in current version, where it is (Lscala/collection/Iterable<Ljava/lang/Object;>;)Ljava/lang/String; rather than (Lscala/collection/Iterable<*>;)Ljava/lang/String;. See https://github.com/lightbend/mima#incompatiblesignatureproblem
-  def mimaBinaryIssueFilters = if (crossScalaVersion.startsWith("2.13"))  {
-    super.mimaBinaryIssueFilters() ++ Seq(
-      ProblemFilter.exclude[IncompatibleSignatureProblem]("pprint.StringPrefix.apply")
-    )
-  } else {
-    super.mimaBinaryIssueFilters()
-  }
-}
-
-trait PPrintModule extends PublishModule with MimaCheck {
+trait PPrintModule extends PublishModule with Mima {
   def artifactName = "pprint"
 
   def publishVersion = VcsVersion.vcsState().format()
+
+  def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
 
   def crossScalaVersion: String
 
@@ -60,8 +44,8 @@ trait PPrintModule extends PublishModule with MimaCheck {
 trait PPrintMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::fansi::0.3.1",
-    ivy"com.lihaoyi::sourcecode::0.2.8"
+    ivy"com.lihaoyi::fansi::0.4.0",
+    ivy"com.lihaoyi::sourcecode::0.3.0"
   )
   def compileIvyDeps =
     if (crossScalaVersion.startsWith("2")) Agg(
@@ -84,7 +68,7 @@ trait PPrintMainModule extends CrossScalaModule {
 
 trait PPrintTestModule extends ScalaModule with TestModule.Utest {
   def crossScalaVersion: String
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.11")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.0")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
