@@ -2,7 +2,7 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 import mill.scalalib.api.Util.isScala3
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-import $ivy.`com.github.lolgab::mill-mima::0.0.11`
+import $ivy.`com.github.lolgab::mill-mima::0.0.13`
 import com.github.lolgab.mill.mima._
 
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion").toList
@@ -18,14 +18,9 @@ trait PPrintModule extends PublishModule with Mima {
 
   def publishVersion = VcsVersion.vcsState().format()
 
-  def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
+  def mimaPreviousVersions = Seq("0.7.3", "0.8.0") ++ VcsVersion.vcsState().lastTag.toSeq
 
   def crossScalaVersion: String
-
-  // Temporary until the next version of Mima gets released with
-  // https://github.com/lightbend/mima/issues/693 included in the release.
-  def mimaPreviousArtifacts =
-    if(isScala3(crossScalaVersion)) Agg.empty[Dep] else super.mimaPreviousArtifacts()
 
   def pomSettings = PomSettings(
     description = artifactName(),
