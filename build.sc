@@ -8,7 +8,7 @@ import com.github.lolgab.mill.mima._
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion").toList
 
 val scalaVersions =
-  "2.12.16" :: "2.13.8" :: "2.11.12" :: "3.1.3" :: dottyCommunityBuildVersion
+  "2.12.17" :: "2.13.8" :: "2.11.12" :: "3.1.3" :: dottyCommunityBuildVersion
 
 val scalaJSVersions = scalaVersions.map((_, "1.10.1"))
 val scalaNativeVersions = scalaVersions.map((_, "0.4.5"))
