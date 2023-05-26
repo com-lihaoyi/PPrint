@@ -34,12 +34,10 @@ trait PPrintModule
     ivy"com.lihaoyi::sourcecode::0.3.0"
   )
 
-  def compileIvyDeps =
-    if (crossScalaVersion.startsWith("2")) Agg(
-      ivy"${scalaOrganization()}:scala-reflect:${scalaVersion()}",
-      ivy"${scalaOrganization()}:scala-compiler:${scalaVersion()}"
-    )
-    else Agg.empty[Dep]
+  def compileIvyDeps = Agg.when(crossScalaVersion.startsWith("2"))(
+    ivy"${scalaOrganization()}:scala-reflect:${scalaVersion()}",
+    ivy"${scalaOrganization()}:scala-compiler:${scalaVersion()}"
+  )
 }
 
 
