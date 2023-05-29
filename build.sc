@@ -2,7 +2,7 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 import mill.scalalib.api.Util.isScala3
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-import $ivy.`com.github.lolgab::mill-mima::0.0.13`
+import $ivy.`com.github.lolgab::mill-mima::0.0.21`
 import com.github.lolgab.mill.mima._
 
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion").toList
