@@ -1,6 +1,6 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.1-8-37c08a`
-import $ivy.`com.github.lolgab::mill-mima::0.0.21`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
+import $ivy.`com.github.lolgab::mill-mima::0.0.23`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import com.github.lolgab.mill.mima._
 
@@ -48,18 +48,18 @@ trait PPrintTestModule extends ScalaModule with TestModule.Utest {
 object pprint extends Module {
   object jvm extends Cross[JvmPPrintModule](scalaVersions)
   trait JvmPPrintModule extends PPrintModule{
-    object test extends Tests with PPrintTestModule
+    object test extends ScalaTests with PPrintTestModule
   }
 
   object js extends Cross[JsPPrintModule](scalaVersions)
   trait JsPPrintModule extends PPrintModule with ScalaJSModule {
     def scalaJSVersion = "1.10.1"
-    object test extends Tests with PPrintTestModule
+    object test extends ScalaJSTests with PPrintTestModule
   }
 
   object native extends Cross[NativePPrintModule](scalaVersions)
   trait NativePPrintModule extends PPrintModule with ScalaNativeModule {
     def scalaNativeVersion = "0.4.5"
-    object test extends Tests with PPrintTestModule
+    object test extends ScalaNativeTests with PPrintTestModule
   }
 }
