@@ -42,7 +42,7 @@ trait PPrintModule
 
 
 trait PPrintTestModule extends ScalaModule with TestModule.Utest {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.0")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.1")
 }
 
 object pprint extends Module {
