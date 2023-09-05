@@ -46,6 +46,7 @@ object HorizontalTests extends TestSuite{
           val tq = "\"\"\""
           test - Check("i am a cow", """ "i am a cow" """)
           test - Check( """ "hello" """.trim, """ "\"hello\"" """.trim)
+          test - Check( """foo\bar""".trim, " \"\"\"foo\\bar\"\"\" ".trim)
 
           test - Check("\n", s"""
           |$tq
