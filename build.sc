@@ -31,7 +31,7 @@ trait PPrintModule
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::fansi::0.4.0",
-    ivy"com.lihaoyi::sourcecode::0.3.0"
+    ivy"com.lihaoyi::sourcecode::0.3.1"
   )
 
   def compileIvyDeps = Agg.when(crossScalaVersion.startsWith("2"))(
