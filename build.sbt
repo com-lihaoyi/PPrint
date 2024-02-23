@@ -6,5 +6,5 @@ lazy val readme = scalatex.ScalatexReadme(
   source = "Readme"
 ).settings(
   scalaVersion := "2.11.12",
-  (unmanagedSources in Compile) += baseDirectory.value/".."/"project"/"Constants.scala"
+  ((Compile / unmanagedSources)) += baseDirectory.value/".."/"project"/"Constants.scala"
 )
