@@ -15,6 +15,10 @@ trait PPrintModule
 
   def mimaPreviousVersions = Seq("0.7.3", "0.8.0") ++ VcsVersion.vcsState().lastTag.toSeq
 
+  def mimaReportBinaryIssues() =
+    if (this.isInstanceOf[ScalaNativeModule] || this.isInstanceOf[ScalaJSModule]) T.command()
+    else super.mimaReportBinaryIssues()
+    
   def pomSettings = PomSettings(
     description = artifactName(),
     organization = "com.lihaoyi",
