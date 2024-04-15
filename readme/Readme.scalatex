@@ -258,6 +258,15 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.9.0}
+      @ul
+        @li
+          Support for Scala-Native 0.5.0
+        @li
+          Dropped support for Scala 2.11.x
+        @li
+          Minimum version of Scala 3 increased to 3.3.1
+
     @sect{0.7.3}
       @ul
         @li

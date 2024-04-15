@@ -7,7 +7,7 @@ import com.github.lolgab.mill.mima._
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion").toList
 
 val scalaVersions =
-  Seq("2.12.16", "2.13.8", "2.11.12", "3.1.3") ++ dottyCommunityBuildVersion
+  Seq("2.12.16", "2.13.8", "3.3.1") ++ dottyCommunityBuildVersion
 
 trait PPrintModule
   extends CrossScalaModule with PublishModule with PlatformScalaModule with Mima {
@@ -30,8 +30,8 @@ trait PPrintModule
   )
 
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::fansi::0.4.0",
-    ivy"com.lihaoyi::sourcecode::0.3.0"
+    ivy"com.lihaoyi::fansi::0.5.0",
+    ivy"com.lihaoyi::sourcecode::0.4.0"
   )
 
   def compileIvyDeps = Agg.when(crossScalaVersion.startsWith("2"))(
@@ -42,7 +42,7 @@ trait PPrintModule
 
 
 trait PPrintTestModule extends ScalaModule with TestModule.Utest {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.0")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.3")
 }
 
 object pprint extends Module {
@@ -53,13 +53,13 @@ object pprint extends Module {
 
   object js extends Cross[JsPPrintModule](scalaVersions)
   trait JsPPrintModule extends PPrintModule with ScalaJSModule {
-    def scalaJSVersion = "1.10.1"
+    def scalaJSVersion = "1.12.0"
     object test extends ScalaJSTests with PPrintTestModule
   }
 
   object native extends Cross[NativePPrintModule](scalaVersions)
   trait NativePPrintModule extends PPrintModule with ScalaNativeModule {
-    def scalaNativeVersion = "0.4.5"
+    def scalaNativeVersion = "0.5.0"
     object test extends ScalaNativeTests with PPrintTestModule
   }
 }
