@@ -7,7 +7,7 @@ import com.github.lolgab.mill.mima._
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion").toList
 
 val scalaVersions =
-  Seq("2.12.16", "2.13.8", "3.3.1") ++ dottyCommunityBuildVersion
+  Seq("2.12.16", "2.13.14", "3.3.1") ++ dottyCommunityBuildVersion
 
 trait PPrintModule
   extends CrossScalaModule with PublishModule with PlatformScalaModule with Mima {
@@ -57,7 +57,7 @@ object pprint extends Module {
 
   object js extends Cross[JsPPrintModule](scalaVersions)
   trait JsPPrintModule extends PPrintModule with ScalaJSModule {
-    def scalaJSVersion = "1.12.0"
+    def scalaJSVersion = "1.16.0"
     object test extends ScalaJSTests with PPrintTestModule
   }
 
