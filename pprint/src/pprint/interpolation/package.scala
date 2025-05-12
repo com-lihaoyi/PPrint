@@ -26,10 +26,10 @@ package object interpolation {
     sb.toString()
   }
 
-  implicit class BlackWhiteContext(self: StringContext) extends AnyVal {
+  implicit class BlackWhiteContext(private val self: StringContext) extends AnyVal {
     def bw(args: Any*): String = interpolate(PPrinter.BlackWhite, self, args)
   }
-  implicit class ColorContext(self: StringContext) extends AnyVal {
-    def clr(args: Any*): String = interpolate(PPrinter.Color, self, args)
+  implicit class ColorContext(private val self: StringContext) extends AnyVal {
+    def pp(args: Any*): String = interpolate(PPrinter.Color, self, args)
   }
 }
