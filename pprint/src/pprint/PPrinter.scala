@@ -168,6 +168,30 @@ case class PPrinter(defaultWidth: Int = 100,
     val truncated = new Truncated(rendered, width, height)
     truncated
   }
+
+  def interpolate(sc: StringContext, args: Any*): String = {
+    val sb = new StringBuilder()
+    val partsIterator = sc.parts.iterator
+    val argsIterator = args.iterator
+
+    if (partsIterator.hasNext) {
+      sb.append(partsIterator.next())
+    }
+
+    while (argsIterator.hasNext) {
+      val arg = argsIterator.next()
+      sb.append(apply(arg).render)
+      if (partsIterator.hasNext) {
+        sb.append(partsIterator.next())
+      }
+    }
+
+    while (partsIterator.hasNext) {
+      sb.append(partsIterator.next())
+    }
+
+    sb.toString()
+  }
 }
 
 object PPrinter {
