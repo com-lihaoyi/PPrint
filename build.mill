@@ -58,13 +58,13 @@ object pprint extends Module {
 
   object js extends Cross[JsPPrintModule](scalaVersions)
   trait JsPPrintModule extends PPrintModule with ScalaJSModule {
-    def scalaJSVersion = "1.16.0"
+    def scalaJSVersion = "1.19.0"
     object test extends ScalaJSTests with PPrintTestModule
   }
 
   object native extends Cross[NativePPrintModule](scalaVersions)
   trait NativePPrintModule extends PPrintModule with ScalaNativeModule {
-    def scalaNativeVersion = "0.5.0"
+    def scalaNativeVersion = "0.5.8"
     object test extends ScalaNativeTests with PPrintTestModule
   }
 }
