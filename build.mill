@@ -1,14 +1,14 @@
-//| mill-version: 1.0.0-RC1-24-d74b52
+//| mill-version: 1.0.0
 //| mvnDeps:
-//| - com.github.lolgab::mill-mima_mill1.0.0-RC1:0.2.0-M1
+//| - com.github.lolgab::mill-mima_mill1:0.2.0
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
-import mill.main.VcsVersion
+import mill.util.VcsVersion
 import com.github.lolgab.mill.mima._
 
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion").toList
 
 val scalaVersions =
-  Seq("2.12.16", "2.13.14", "3.3.1") ++ dottyCommunityBuildVersion
+  Seq("2.12.16", "2.13.14", "3.3.5") ++ dottyCommunityBuildVersion
 
 trait PPrintModule
   extends CrossScalaModule with PublishModule with PlatformScalaModule with Mima {
@@ -19,7 +19,7 @@ trait PPrintModule
   def mimaReportBinaryIssues() =
     if (this.isInstanceOf[ScalaNativeModule] || this.isInstanceOf[ScalaJSModule]) Task.Command{}
     else super.mimaReportBinaryIssues()
-    
+
   def pomSettings = PomSettings(
     description = artifactName(),
     organization = "com.lihaoyi",
