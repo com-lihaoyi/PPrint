@@ -179,6 +179,13 @@ object DerivationTests extends TestSuite{
         """C2(results = List(C1(name = "hello", types = List("world"))))"""
       )
     }
+    test("field name with backticks") {
+      case class Test(`with backticks`: Boolean, withoutBackticks: Boolean)
+      new Check(100, 99999, false, true)(
+        Test(true, false),
+        """Test(`with backticks` = true, withoutBackticks = false)"""
+      )
+    }
   }
 }
 

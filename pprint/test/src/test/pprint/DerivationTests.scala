@@ -168,5 +168,6 @@ object DerivationTests extends TestSuite{
         """C2(List(C1("hello", List("world"))))"""
       )
     }
+
   }
 }
