@@ -1,10 +1,13 @@
 package test.pprint
 
 import utest._
-import scala.collection.{immutable => imm, mutable}
+
+import scala.collection.{mutable, immutable => imm}
 
 object HorizontalTests extends TestSuite{
-  val Check = new Check(9999)
+
+  val Check = new Check(100, 9999, false, false)
+
   val tests = TestSuite{
     test("Horizontal"){
 
@@ -61,10 +64,6 @@ object HorizontalTests extends TestSuite{
             "\"\"\"\n" + "ABCDEFG" * n + "\"\"\""
           )
         }
-        test("Symbols"){
-          test - Check('hello, """'hello""")
-          test - Check('I_AM_A_COW, """'I_AM_A_COW""")
-        }
       }
 
       test("misc"){
@@ -108,26 +107,20 @@ object HorizontalTests extends TestSuite{
         test("Array") - Check(Array(1, 2, 3), "Array(1, 2, 3)")
         test("Seq") - Check(Seq(1, 2, 3), "List(1, 2, 3)")
         test("List") - Check(List("1", "2", "3"), """List("1", "2", "3")""")
-        test("Vector") - Check(Vector('omg, 'wtf, 'bbq), """Vector('omg, 'wtf, 'bbq)""")
+        test("Vector") - Check(Vector("omg", "wtf", "bbq"), """Vector("omg", "wtf", "bbq")""")
 
         test("Buffer") - Check(
-          mutable.Buffer('omg, 'wtf, 'bbq),
-          """ArrayBuffer('omg, 'wtf, 'bbq)""",
-          """WrappedArray('omg, 'wtf, 'bbq)"""
+          mutable.Buffer("omg", "wtf", "bbq"),
+          """ArrayBuffer("omg", "wtf", "bbq")""",
+          """WrappedArray("omg", "wtf", "bbq")"""
         )
 
 
-        // Streams are hard-coded to always display vertically, in order
-        // to make streaming pretty-printing sane
-        test("Stream") - Check(
-          Stream('omg, 'wtf, 'bbq),
-          """Stream('omg, 'wtf, 'bbq)"""
-        )
-        test("Iterable") - Check(Iterable('omg, 'wtf, 'bbq), """List('omg, 'wtf, 'bbq)""")
-        test("Traversable") - Check(Traversable('omg, 'wtf, 'bbq), """List('omg, 'wtf, 'bbq)""")
-        test("Set") - Check(Set('omg), """Set('omg)""")
-        test("mutableSet") - Check(mutable.Set('omg), """Set('omg)""", """HashSet('omg)""")
-        test("collectionSet") - Check(collection.Set('omg), """Set('omg)""")
+
+        test("Iterable") - Check(Iterable("omg", "wtf", "bbq"), """List("omg", "wtf", "bbq")""")
+        test("Set") - Check(Set("omg"), """Set("omg")""")
+        test("mutableSet") - Check(mutable.Set("omg"), """Set("omg")""", """HashSet("omg")""")
+        test("collectionSet") - Check(collection.Set("omg"), """Set("omg")""")
         test("SortedSet") - Check(
           imm.SortedSet("1", "2", "3"),
           """TreeSet("1", "2", "3")""",
