@@ -170,7 +170,7 @@ object DerivationTests extends TestSuite{
     }
     test("field name with backticks"){
       case class Test(`with backticks`: Boolean, withoutBackticks: Boolean)
-      Check(
+      new Check(100, 99999, false, true)(
         Test(true, false),
         """Test(`with backticks` = true, withoutBackticks = false)"""
       )
