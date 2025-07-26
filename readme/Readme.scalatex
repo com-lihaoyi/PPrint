@@ -258,6 +258,10 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.9.3}
+      @ul
+        @li
+          Fix rendering of field names with backticks @lnk("#124", "https://github.com/com-lihaoyi/PPrint/pull/124")
     @sect{0.9.2}
       @ul
         @li
