@@ -17,7 +17,9 @@ object ProductSupport {
                              walker: Walker,
                              escapeUnicode: Boolean,
                              showFieldNames: Boolean): Iterator[Tree] = {
-    if (!showFieldNames) x.productIterator.map(x => walker.treeify(x, escapeUnicode, showFieldNames))
+    if (!showFieldNames || x.productArity < 2) {
+      x.productIterator.map(x => walker.treeify(x, escapeUnicode, showFieldNames))
+    }
     else x.productElementNames
       .zipWithIndex
       .map {

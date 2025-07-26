@@ -258,6 +258,23 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.9.2}
+      @ul
+        @li
+          Skip field names for 1-arity case classes @lnk("#157", "https://github.com/com-lihaoyi/PPrint/pull/157")
+    @sect{0.9.1}
+      @ul
+        @li
+          Add pretty-printing string interpolators for BlackWhite and Color @hl.scala{pp""} and @hl.scala{bw""} @lnk("#151", "https://github.com/com-lihaoyi/PPrint/pull/151")
+    @sect{0.9.0}
+      @ul
+        @li
+          Support for Scala-Native 0.5.0
+        @li
+          Dropped support for Scala 2.11.x
+        @li
+          Minimum version of Scala 3 increased to 3.3.1
+
     @sect{0.7.3}
       @ul
         @li
