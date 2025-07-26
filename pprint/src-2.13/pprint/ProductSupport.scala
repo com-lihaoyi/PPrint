@@ -1,7 +1,6 @@
 package pprint
 
 object ProductSupport {
-
   private def isIdentifier(name: String) = {
     def isStart(c: Char) = (c == '_') || (c == '$') || Character.isUnicodeIdentifierStart(c)
     def isPart(c: Char) = (c == '$') || Character.isUnicodeIdentifierPart(c)
