@@ -8,7 +8,7 @@ import com.github.lolgab.mill.mima._
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion").toList
 
 val scalaVersions =
-  Seq("2.12.16", "2.13.14", "3.3.5") ++ dottyCommunityBuildVersion
+  Seq("2.12.20", "2.13.15", "3.3.6") ++ dottyCommunityBuildVersion
 
 trait PPrintModule
   extends CrossScalaModule with PublishModule with PlatformScalaModule with Mima {
@@ -35,8 +35,8 @@ trait PPrintModule
   )
 
   def mvnDeps = Seq(
-    mvn"com.lihaoyi::fansi::0.5.0",
-    mvn"com.lihaoyi::sourcecode::0.4.0"
+    mvn"com.lihaoyi::fansi::0.5.1",
+    mvn"com.lihaoyi::sourcecode::0.4.3-M5"
   )
 
   def compileMvnDeps = Seq(
