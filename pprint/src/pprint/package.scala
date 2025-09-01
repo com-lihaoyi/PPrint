@@ -10,9 +10,9 @@ package object pprint extends PPrinter{
   }
 
   implicit class BlackWhiteContext(private val self: StringContext) extends AnyVal {
-    def bw(args: Any*): String = PPrinter.BlackWhite.interpolate(self, args)
+    def bw(args: Any*): String = PPrinter.BlackWhite.interpolate(self, args:_*)
   }
   implicit class ColorContext(private val self: StringContext) extends AnyVal {
-    def pp(args: Any*): String = PPrinter.Color.interpolate(self, args)
+    def pp(args: Any*): String = PPrinter.Color.interpolate(self, args:_*)
   }
 }

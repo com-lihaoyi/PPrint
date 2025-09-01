@@ -101,5 +101,11 @@ object UnitTests extends TestSuite{
       )
 
     }
+    test("interpolate") {
+      import pprint._
+      val actual = bw"1${2}3${4}"
+      val expected = "1234"
+      assert(actual == expected)
+    }
   }
 }
