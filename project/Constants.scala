@@ -1,5 +1,5 @@
 package pprint
 
 object Constants {
-  val version = "0.9.0"
+  val version = "0.9.4"
 }

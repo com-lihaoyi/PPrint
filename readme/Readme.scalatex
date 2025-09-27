@@ -258,6 +258,10 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.9.4}
+      @ul
+        @li
+          Fix the use of PPrinter#interpolate in bw and pp interpolators @lnk("#158", "https://github.com/com-lihaoyi/PPrint/pull/158")
     @sect{0.9.3}
       @ul
         @li
