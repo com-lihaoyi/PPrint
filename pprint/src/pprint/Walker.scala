@@ -108,7 +108,6 @@ abstract class Walker{
 
       case x: Array[_] => Tree.Apply("Array", x.iterator.map(x => treeify(x, escapeUnicode, showFieldNames)))
 
-
       case x: Product =>
         val className = x.getClass.getName
         if (x.productArity == 0) Tree.Lazy(ctx => Iterator(x.toString))
