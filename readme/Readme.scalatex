@@ -258,6 +258,11 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.9.5}
+      @ul
+        @li
+          Fix rendering of @code{Map}s, @code{Seq}s and @code{Set}s which are of a concrete subclass @lnk("#161", "https://github.com/com-lihaoyi/PPrint/pull/161")
+
     @sect{0.9.4}
       @ul
         @li
