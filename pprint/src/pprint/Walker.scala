@@ -1,4 +1,7 @@
 package pprint
+import scala.collection.mutable.ArraySeq
+import scala.collection.immutable.HashMap
+import scala.collection.immutable.HashSet
 
 /**
   * A lazy AST representing pretty-printable text. Models `foo(a, b)`
@@ -73,13 +76,26 @@ abstract class Walker{
 
       case x: scala.collection.Map[_, _] =>
         Tree.Apply(
-          StringPrefix(x),
+          x match{
+            // Common concrete subclasses of `Seq`, `Map`, and `Set` that aren't imported by default,
+            // do we should just use the name of the factory object that is imported by default
+            case _: HashMap[_, _] => "Map"
+            case _ => StringPrefix(x)
+          },
           x.iterator.flatMap { case (k, v) =>
             Seq(Tree.Infix(treeify(k, escapeUnicode, showFieldNames), "->", treeify(v, escapeUnicode, showFieldNames)))
           }
         )
 
-      case x: Iterable[_] => Tree.Apply(StringPrefix(x), x.iterator.map(x => treeify(x, escapeUnicode, showFieldNames)))
+      case x: Iterable[_] =>
+        Tree.Apply(
+          x match{
+            case _: ArraySeq[_] => "Seq"
+            case _: HashSet[_] => "Set"
+            case _ => StringPrefix(x)
+          },
+          x.iterator.map(x => treeify(x, escapeUnicode, showFieldNames))
+        )
 
       case None => Tree.Literal("None")
 
@@ -91,6 +107,7 @@ abstract class Walker{
           Tree.Literal("non-empty iterator")
 
       case x: Array[_] => Tree.Apply("Array", x.iterator.map(x => treeify(x, escapeUnicode, showFieldNames)))
+
 
       case x: Product =>
         val className = x.getClass.getName
