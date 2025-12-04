@@ -258,6 +258,10 @@
       display.block
     )
   @sect{Version History}
+    @sect{0.9.6}
+      @ul
+        @li
+          Expose @code{pprint.logTo} @lnk("#162", "https://github.com/com-lihaoyi/PPrint/pull/162")
     @sect{0.9.5}
       @ul
         @li
