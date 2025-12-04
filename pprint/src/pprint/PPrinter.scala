@@ -38,7 +38,7 @@ case class PPrinter(defaultWidth: Int = 100,
              showFieldNames: Boolean = defaultShowFieldNames)
             (implicit line: sourcecode.Line,
              fileName: sourcecode.FileName): T = {
-    doLog(x, tag, width, height, indent, escapeUnicode, showFieldNames, Console.out)(line, fileName)
+    logTo(x, tag, width, height, indent, escapeUnicode, showFieldNames, Console.out)(line, fileName)
   }
 
   object err {
@@ -56,20 +56,24 @@ case class PPrinter(defaultWidth: Int = 100,
                showFieldNames: Boolean = defaultShowFieldNames)
               (implicit line: sourcecode.Line,
                fileName: sourcecode.FileName): T = {
-      doLog(x, tag, width, height, indent, escapeUnicode, showFieldNames, Console.err)(line, fileName)
+      logTo(x, tag, width, height, indent, escapeUnicode, showFieldNames, Console.err)(line, fileName)
     }
   }
 
-  private def doLog[T](x: sourcecode.Text[T],
-                       tag: String,
-                       width: Int,
-                       height: Int,
-                       indent: Int,
-                       escapeUnicode: Boolean,
-                       showFieldNames: Boolean,
-                       out: PrintStream)
-                      (implicit line: sourcecode.Line,
-                       fileName: sourcecode.FileName): T = {
+  /**
+    * A base version of `pprint.log` or `pprint.err.log` that lets you specify where 
+    * you want to log the debug message to
+    */
+  def logTo[T](x: sourcecode.Text[T],
+               tag: String,
+               width: Int,
+               height: Int,
+               indent: Int,
+               escapeUnicode: Boolean,
+               showFieldNames: Boolean,
+               out: PrintStream)
+              (implicit line: sourcecode.Line,
+               fileName: sourcecode.FileName): T = {
     val tagStrs =
       if (tag.isEmpty) Seq()
       else Seq(fansi.Color.Cyan(tag), fansi.Str(" "))
