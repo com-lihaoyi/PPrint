@@ -48,6 +48,11 @@ object Tree{
 
 abstract class Walker{
   val tuplePrefix = "scala.Tuple"
+  val lazyClassNames = Set(
+    "scala.collection.immutable.Stream$Cons",
+    "scala.collection.immutable.LazyList",
+    "scala.collection.immutable.LazyListIterable"
+  )
 
   def additionalHandlers: PartialFunction[Any, Tree]
   def treeify(x: Any, escapeUnicode: Boolean, showFieldNames: Boolean): Tree = additionalHandlers.lift(x).getOrElse{
@@ -72,6 +77,8 @@ abstract class Walker{
         if (x.exists(c => c == '\n' || c == '\r')) Tree.Literal("\"\"\"" + x + "\"\"\"")
         else Tree.Literal(Util.literalize(x, escapeUnicode))
 
+      case x: StringBuilder => treeify(x.toString, escapeUnicode, showFieldNames)
+
       case x: Symbol => Tree.Literal("'" + x.name)
 
       case x: scala.collection.Map[_, _] =>
@@ -86,6 +93,12 @@ abstract class Walker{
             Seq(Tree.Infix(treeify(k, escapeUnicode, showFieldNames), "->", treeify(v, escapeUnicode, showFieldNames)))
           }
         )
+
+      // Do not force Streams and LazyLists to be computed.
+      // Unfortunately, they do not leak lazy/eagerness by design, so we cannot simply ask "are you still lazy?".
+      // So we check their toString.
+      case x: Iterable[_] if lazyClassNames(x.getClass.getName) && x.toString.contains("<not computed>") =>
+        Tree.Literal(x.toString)
 
       case x: Iterable[_] =>
         Tree.Apply(

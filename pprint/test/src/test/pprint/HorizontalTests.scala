@@ -115,7 +115,10 @@ object HorizontalTests extends TestSuite{
           """WrappedArray("omg", "wtf", "bbq")"""
         )
 
-
+        test("stream") - Check(
+          Stream.continually("foo"),
+          """Stream(foo, <not computed>)"""
+        )
 
         test("Iterable") - Check(Iterable("omg", "wtf", "bbq"), """List("omg", "wtf", "bbq")""")
         test("Set") - Check(Set("omg"), """Set("omg")""")
@@ -145,6 +148,11 @@ object HorizontalTests extends TestSuite{
           imm.SortedMap("key" -> "v", "key2" -> "v2"),
           """Map("key" -> "v", "key2" -> "v2")""",
           """TreeMap("key" -> "v", "key2" -> "v2")"""
+        )
+
+        test("StringBuilder") - Check(
+          mutable.StringBuilder("example"),
+          """ "example" """
         )
       }
 
