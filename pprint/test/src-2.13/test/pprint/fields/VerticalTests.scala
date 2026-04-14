@@ -437,19 +437,6 @@ object VerticalTests extends TestSuite{
           )
         }
       }
-
-      test("stream"){
-        val Check = new Check(height = 5)
-        Check(
-          Stream.continually("foo"),
-          """Stream(
-            |  "foo",
-            |  "foo",
-            |  "foo",
-            |...
-          """.stripMargin
-        )
-      }
     }
 
     test("wrappedLines"){

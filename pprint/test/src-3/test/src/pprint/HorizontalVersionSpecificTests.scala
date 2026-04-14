@@ -8,13 +8,17 @@ object HorizontalVersionSpecificTests extends TestSuite{
   val Check = new Check(100, 9999, false, false)
 
   val tests = TestSuite{
-    // Streams are hard-coded to always display vertically, in order
-    // to make streaming pretty-printing sane
-    test("LazyList") - Check(
-      LazyList("omg", "wtf", "bbq"),
-      """LazyList("omg", "wtf", "bbq")"""
-    )
-
+    // Only show LazyList contents if they've been computed already
+    test("LazyList") {
+      test - Check(
+        { val l = LazyList("omg", "wtf", "bbq"); l.toArray; l },
+        """LazyList("omg", "wtf", "bbq")"""
+      )
+      test - Check(
+        "omg" #:: LazyList.empty,
+        """LazyList(<not computed>)"""
+      )
+    }
   }
 
 
