@@ -152,7 +152,7 @@ object HorizontalTests extends TestSuite{
         )
 
         test("StringBuilder") - Check(
-          mutable.StringBuilder("example"),
+          new mutable.StringBuilder().append("example"),
           """ "example" """
         )
       }
