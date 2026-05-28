@@ -8,7 +8,8 @@ object HorizontalVersionSpecificTests extends TestSuite{
   val tests = TestSuite{
     test("Stream") - Check(
       Stream('omg, 'wtf, 'bbq),
-      """Stream('omg, 'wtf, 'bbq)"""
+      """Stream('omg, 'wtf, 'bbq)""",
+      """Stream(Symbol(omg), <not computed>)"""
     )
   }
 }
