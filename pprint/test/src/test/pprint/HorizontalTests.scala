@@ -112,7 +112,8 @@ object HorizontalTests extends TestSuite{
         test("Buffer") - Check(
           mutable.Buffer("omg", "wtf", "bbq"),
           """ArrayBuffer("omg", "wtf", "bbq")""",
-          """WrappedArray("omg", "wtf", "bbq")"""
+          """WrappedArray("omg", "wtf", "bbq")""",
+          """ArrayDeque("omg", "wtf", "bbq")""",
         )
 
         test("stream") - Check(
