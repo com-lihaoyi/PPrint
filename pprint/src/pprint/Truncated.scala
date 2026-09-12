@@ -23,19 +23,23 @@ class Truncated(chunks0: Iterator[fansi.Str],
     var previousSlashR = false
 
     def handleNormalChar(char: Char) = {
-      previousSlashN = false
-      previousSlashR = false
       if (char == '\n' && previousSlashR || char == '\r' && previousSlashN) {
-        // do nothing
+        previousSlashN = false
+        previousSlashR = false
       } else if (char == '\n') {
         previousSlashN = true
+        previousSlashR = false
         lineLengths.append(0)
       } else if (char == '\r') {
         previousSlashR = true
+        previousSlashN = false
         lineLengths.append(0)
+      } else {
+        previousSlashN = false
+        previousSlashR = false
+        if (lineLengths.last == width) lineLengths.append(1)
+        else lineLengths(lineLengths.length - 1) += 1
       }
-      else if (lineLengths.last == width) lineLengths.append(1)
-      else lineLengths(lineLengths.length - 1) += 1
 
     }
 
