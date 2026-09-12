@@ -81,6 +81,12 @@ object AdvancedTests extends TestSuite{
         expectedCompletedLineCount = 1,
         expectedLastLineLength = 1
       )
+      check(
+        Iterator("Hello\r\nWorld"),
+        width = 80, height = 50,
+        expectedCompletedLineCount = 1,
+        expectedLastLineLength = 5
+      )
     }
 
     test("config"){
