@@ -37,7 +37,7 @@ trait PPrintModule
 
   def mvnDeps = Seq(
     mvn"com.lihaoyi::fansi::0.5.1",
-    mvn"com.lihaoyi::sourcecode::0.4.3-M5"
+    mvn"com.lihaoyi::sourcecode::0.4.4"
   )
 
   def compileMvnDeps = Seq(
